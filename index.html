@@ -249,6 +249,32 @@ textarea.inp{resize:none;display:block}
 .notes .flow button[aria-current="true"]{background:var(--fg);color:var(--bg)}
 .notes .flow button[aria-current="true"] span{color:var(--bg);opacity:.7}
 
+/* studies 16–20: visuals reused from live II screens */
+.pbox{background:#0A0A0A;border:.5px solid #232627;padding:12px;display:flex;flex-direction:column;gap:8px;position:relative}
+.pbox svg{display:block;width:100%;height:auto;touch-action:none;cursor:crosshair}
+.pends{display:flex;justify-content:space-between;font-size:12px}
+.prow{display:flex;justify-content:space-between;align-items:baseline;font-size:15px;padding:11px 0;border-bottom:.5px solid var(--div);color:var(--t3)}
+.prow b{font-weight:400;color:var(--t1)}
+.hm{display:grid;grid-template-columns:28px repeat(12,1fr) 50px;gap:3px;align-items:center}
+.hm .hd{font-size:9.5px;color:var(--t3);text-align:center}
+.hm .yr{font:400 9px var(--mono);color:var(--t4)}
+.hm .c{height:17px;opacity:0;transform:scale(.6);transition:opacity .5s var(--ease),transform .5s var(--ease)}
+.hm .c.on{opacity:1;transform:none}
+.hm .an{text-align:right;font-size:11px;line-height:1.05;opacity:0;transition:opacity .6s var(--ease)}
+.hm .an.on{opacity:1}
+.hm .an small{display:block;font-size:8.5px;color:var(--t4)}
+.sent{font:400 14px/1.5 var(--mono);border:1px solid var(--div);padding:14px;color:var(--t2)}
+.sent b{font-weight:500;color:var(--t1);display:inline-block;min-width:1ch}
+.pch{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.pch button{all:unset;cursor:pointer;text-align:center;height:34px;line-height:34px;border:1px solid var(--div);font:500 12.5px var(--sans);color:var(--t3);font-variant-numeric:tabular-nums;transition:all .3s}
+.pch button[aria-pressed="true"]{border-color:var(--t1);color:var(--t1)}
+.mrow{display:grid;grid-template-columns:62px 1fr 40px;gap:10px;align-items:center;font-size:12.5px;color:var(--t2)}
+.mrow .tr{height:6px;background:var(--div);position:relative}
+.mrow .tr i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--t3);transition:width 1.4s var(--ease)}
+.mrow.you{color:var(--t1)}
+.mrow.you .tr i{background:var(--t1)}
+.mrow .v{text-align:right;font-variant-numeric:tabular-nums}
+
 /* round 2: visual-first */
 .hx{font-size:40px;font-weight:200;letter-spacing:-.05em;line-height:1.02;margin:6px 0 0;text-wrap:balance}
 .hx .dim{color:var(--t4)}
@@ -307,7 +333,7 @@ textarea.inp{resize:none;display:block}
   <aside class="side">
     <div>
       <div style="font:500 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">II · Sign-up · Screen 1</div>
-      <h1>Fifteen first screens, one flow</h1>
+      <h1>Twenty first screens, one flow</h1>
     </div>
     <p>Pick a first-screen study, then tap <b>Look inside</b> on the phone to walk the full sign-up flow. Every study leads into the same six screens.</p>
     <nav class="list" id="list" aria-label="Studies"></nav>
@@ -1084,6 +1110,204 @@ V.push({
   notes:{
     idea:'Calibration as a moment of truth. Illustrative decisions rain down into four confidence buckets and land as beat the index or trailed. A line then rises to show how often each level of confidence actually paid off, against a dashed line for what earned confidence would look like. The 90%+ bucket falls short and gets flagged as overconfident. It is the most provocative of the five: it asks the investor a question about themselves.',
     checks:['4 words of copy','Calibration preview','Illustrative label','Skip']
+  }
+});
+
+/* ================= 16–20 · BUILT FROM LIVE II VISUALS ================= */
+const GOLD = '#C29A2A', UP = '#288752', DN = '#BE3C36';
+
+/* 16 — Performance card with scrub (main dashboard) */
+V.push({
+  name:'Always know where you stand', tag:'The dashboard’s Portfolio vs S&P card, scrubbing through time',
+  html(){
+    return `<div class="body" style="gap:18px">
+      <h1 class="hx fi" data-d="60">Always know<br><span class="dim">where you stand.</span></h1>
+      <div class="pbox fi" data-d="200">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t3)"><span>3y 4m · Portfolio vs S&amp;P 500</span><span id="p-dt" class="tn"></span></div>
+        <svg id="p-svg" viewBox="0 0 320 180"></svg>
+        <div class="pends tn"><span>Portfolio <b style="font-weight:400" id="p-e1">+39.4%</b></span><span style="color:${GOLD}">S&amp;P 500 <span id="p-e2">+45.2%</span></span></div>
+      </div>
+      <div class="fi" data-d="400">
+        <div class="prow"><span>Portfolio</span><b class="tn" id="p-r1">+39.4%</b></div>
+        <div class="prow"><span>S&amp;P 500, same window</span><b class="tn" id="p-r2">+45.2%</b></div>
+        <div class="prow" style="border-bottom:0"><span>Alpha</span><b class="tn" id="p-r3"></b></div>
+      </div>
+      <div class="tiny fi" data-d="500">Drag the chart · illustrative · S&amp;P Dow Jones Indices</div>
+    </div>${FOOT2(700)}`;
+  },
+  init(el, ctx){
+    const n = 40, P = walk(81,n,.394,.04), S = walk(82,n,.452,.03), all = P.concat(S), mn = Math.min(...all)-3, mx = Math.max(...all)+3;
+    const svg = el.querySelector('#p-svg'), X = i => 320*i/n, Y = v => 172 - 164*(v-mn)/(mx-mn);
+    svg.innerHTML = `<path d="${pathOf(S,0,320,8,164,mn,mx)}" fill="none" stroke="${GOLD}" stroke-width="1"/>
+      <path d="${pathOf(P,0,320,8,164,mn,mx)}" fill="none" stroke="#fff" stroke-width="1" pathLength="1" class="dl" data-d="300"/>
+      <g id="p-sc" opacity="0"><line id="p-l" y1="0" y2="180" stroke="#565B5E" stroke-width=".5"/><circle id="p-a" r="2.5" fill="#fff"/><circle id="p-b" r="2.5" fill="${GOLD}"/></g>`;
+    const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const set = (i, show) => {
+      i = Math.max(0, Math.min(n, Math.round(i)));
+      const p = P[i]-100, s = S[i]-100, a = p - s;
+      el.querySelector('#p-sc').setAttribute('opacity', show ? 1 : 0);
+      el.querySelector('#p-l').setAttribute('x1', X(i)); el.querySelector('#p-l').setAttribute('x2', X(i));
+      el.querySelector('#p-a').setAttribute('cx', X(i)); el.querySelector('#p-a').setAttribute('cy', Y(P[i]));
+      el.querySelector('#p-b').setAttribute('cx', X(i)); el.querySelector('#p-b').setAttribute('cy', Y(S[i]));
+      const m = (5 + i) % 12, y = 2023 + Math.floor((5 + i)/12);
+      el.querySelector('#p-dt').textContent = show ? mo[m] + ' ' + y : '';
+      el.querySelector('#p-r1').textContent = fmt(p); el.querySelector('#p-r2').textContent = fmt(s);
+      el.querySelector('#p-r3').innerHTML = `${fmt(a,1,' pp')} <span style="color:${a<0?DN:UP}">${a<0?'▼':'▲'}</span>`;
+    };
+    set(n, false);
+    let auto = true;
+    if (!RM) ctx.later(1800, () => { const t0 = performance.now(), dur = T(4200);
+      ctx.raf(now => { if (!auto) return false; const q = Math.min(1,(now-t0)/dur); set(n*ease(q), q < 1); if (q >= 1) set(n, false); return q < 1; }); });
+    const pick = e => { const r = svg.getBoundingClientRect(); auto = false; set((e.clientX - r.left)/r.width*n, true); };
+    svg.addEventListener('pointermove', pick); svg.addEventListener('pointerdown', pick);
+    svg.addEventListener('pointerleave', () => set(n, false));
+  },
+  notes:{
+    idea:'Lifts the Performance card straight from the unified main dashboard: a boxed plot, portfolio in white and the S&P 500 in gold, with no axes or grid, and alpha as the bottom line. On load a scrub line sweeps through 3 years 4 months and the numbers rewrite month by month. The visitor can drag it themselves. The first screen shows the real product, not a metaphor for it.',
+    checks:['Live dashboard component','Interactive scrub','Attribution','Illustrative label']
+  }
+});
+
+/* 17 — Calibration fan (main dashboard / positions) */
+V.push({
+  name:'Every call, measured', tag:'The dashboard’s Calibration fan: each decision as a line pulling away from the S&P',
+  html(){
+    return `<div class="body" style="gap:14px">
+      <h1 class="hx fi" data-d="60">Every call,<br><span class="dim">against the S&amp;P.</span></h1>
+      <div class="fi" data-d="200"><svg id="fan" viewBox="0 0 335 270" style="width:100%;display:block;overflow:visible"></svg></div>
+      <div class="fi" data-d="2600" style="display:flex;flex-direction:column;gap:6px">
+        <div style="font-size:15px" class="tn"><span style="color:${UP}">6 of 11 ahead of the S&amp;P 500</span> <span style="color:var(--t2)">· avg +1.9 pp</span></div>
+        <div class="tiny">Each line is one decision since entry · illustrative</div>
+      </div>
+    </div>${FOOT2(2800)}`;
+  },
+  init(el, ctx){
+    const C = [['NVDA',24],['COST',12],['MSFT',8],['SHOP',5],['NWR',3],['RY',1.5],['TD',-2],['ENB',-4],['AAPL',-6],['DIS',-9],['NKE',-12]];
+    const x0 = 24, x1 = 270, top = 8, bot = 262, hi = 30, lo = -15, yv = v => bot - (v-lo)/(hi-lo)*(bot-top);
+    const r = rng(17);
+    let g = `<rect x="${x0}" y="${top}" width="${x1-x0}" height="${yv(0)-top}" fill="${UP}" opacity=".055"/>
+      <rect x="${x0}" y="${yv(0)}" width="${x1-x0}" height="${bot-yv(0)}" fill="${DN}" opacity=".07"/>
+      <rect x="${x1-(x1-x0)*.15}" y="${top}" width="${(x1-x0)*.15}" height="${bot-top}" fill="#1C1C1C" opacity=".35"/>
+      ${[30,15,-15].map(v=>`<text x="${x0-4}" y="${yv(v)+3}" text-anchor="end" font-size="8.5" fill="#565B5E" font-family="Inter">${v>0?'+':MINUS}${Math.abs(v)}</text>`).join('')}
+      <line x1="${x0}" x2="${x1}" y1="${yv(0)}" y2="${yv(0)}" stroke="${GOLD}" stroke-width="1"/>
+      <text x="${x0-4}" y="${yv(0)+3}" text-anchor="end" font-size="8.5" fill="${GOLD}" font-family="Inter">S&amp;P</text>`;
+    const labelsY = [];
+    C.forEach(([tk,pp],i) => {
+      const entry = x0 + (x1-x0)*(.05 + r()*.4), steps = 26; let d = `M${x0},${yv(0)}L${entry},${yv(0)}`;
+      for (let k = 1; k <= steps; k++){ const f = k/steps, x = entry + (x1-entry)*f, v = pp*Math.pow(f,.8) + (r()-.5)*4*(1-f*.6); d += `L${x.toFixed(1)},${yv(k===steps?pp:v).toFixed(1)}`; }
+      const col = pp >= 0 ? UP : DN, rr = 1.9 + 1.7*Math.sqrt((Math.abs(pp)-1.5)/(24-1.5));
+      let ly = yv(pp); labelsY.forEach(y => { if (Math.abs(ly - y) < 13) ly = y + 13; }); labelsY.push(ly);
+      const dl = 300 + i*150;
+      g += `<path d="${d}" fill="none" stroke="${col}" stroke-width="1" opacity=".85" pathLength="1" class="dl" data-d="${dl}"/>
+        <circle cx="${x1}" cy="${yv(pp)}" r="${rr}" fill="${col}" class="fo" data-d="${dl+900}"/>
+        <text x="${x1+10}" y="${ly+3}" font-size="9" fill="#C7C7C7" font-family="Inter" class="fo tn" data-d="${dl+900}">${tk} <tspan fill="${col}">${pp>0?'+':MINUS}${Math.abs(pp)}</tspan></text>`;
+    });
+    el.querySelector('#fan').innerHTML = g;
+  },
+  notes:{
+    idea:'The Calibration fan from the main dashboard and positions screens. Eleven decisions start flat on the gold S&P 500 line and pull away above it (green) or below it (red), one after another. It turns “every holding is measured against the index” into one image, using the exact chart the investor will meet inside the app.',
+    checks:['Live dashboard component','Benchmark as baseline','Illustrative label','Skip']
+  }
+});
+
+/* 18 — Winners vs laggards (Capital Calibration) */
+V.push({
+  name:'Winners vs laggards', tag:'Capital Calibration’s two circles, sized by money, packed with positions',
+  html(){
+    return `<div class="body" style="gap:14px">
+      <h1 class="hx fi" data-d="60" style="font-size:34px">Your laggards cost <span style="color:${DN};font-weight:300">2.9×</span><br><span class="dim">what your winners added.</span></h1>
+      <div class="cv2 fi" data-d="200"><svg id="wl" viewBox="0 0 335 300" preserveAspectRatio="xMidYMax meet"></svg></div>
+      <div class="tiny fi" data-d="400">Each position vs the S&amp;P 500 while you held it · illustrative</div>
+    </div>${FOOT2(600)}`;
+  },
+  init(el, ctx){
+    const RL = 92, RW = Math.round(RL*Math.sqrt(194/554)), gap = 26, base = 236;
+    const cxW = (335 - (2*RW + gap + 2*RL))/2 + RW, cxL = cxW + RW + gap + RL;
+    const pack = (cx, cy, R, n, seed) => { const r = rng(seed), out = []; const sizes = Array.from({length:n}, (_,i)=> R*(.34*Math.pow(.82,i)) + 3).sort((a,b)=>b-a);
+      sizes.forEach(s => { for (let k = 0; k < 400; k++){ const a = r()*Math.PI*2, d = r()*(R-s-3), x = cx + d*Math.cos(a), y = cy + d*Math.sin(a);
+        if (out.every(o => Math.hypot(o.x-x,o.y-y) > o.s + s + 1.5)){ out.push({x,y,s}); break; } } }); return out; };
+    const bw = pack(cxW, base-RW, RW, 9, 3), bl = pack(cxL, base-RL, RL, 13, 4);
+    const big = (cx, R, col, d) => `<circle cx="${cx}" cy="${base-R}" r="${R}" fill="${col}" fill-opacity=".14" stroke="${col}" stroke-width="1.5" style="transform-origin:${cx}px ${base}px;transform:scale(0);transition:transform 1.4s var(--ease)" data-grow="${d}"/>`;
+    const small = (b, col, d) => b.map((o,i)=>`<circle cx="${o.x}" cy="${o.y}" r="${o.s}" fill="${col}" fill-opacity=".22" stroke="${col}" stroke-width=".75" class="fo" data-d="${d + i*80}"/>`).join('');
+    el.querySelector('#wl').innerHTML = big(cxW, RW, UP, 300) + big(cxL, RL, DN, 500) + small(bw, UP, 1500) + small(bl, DN, 1700) +
+      `<g class="fo" data-d="1300" font-family="Inter" text-anchor="middle">
+        <text x="${cxW}" y="${base+26}" font-size="20" font-weight="300" fill="${UP}">+194K</text><text x="${cxW}" y="${base+44}" font-size="11" fill="#929292">54 beat the S&amp;P</text>
+        <text x="${cxL}" y="${base+26}" font-size="20" font-weight="300" fill="${DN}">${MINUS}554K</text><text x="${cxL}" y="${base+44}" font-size="11" fill="#929292">58 trailed the S&amp;P</text></g>`;
+    el.querySelectorAll('[data-grow]').forEach(c => ctx.later(+c.dataset.grow, () => c.style.transform = 'scale(1)'));
+  },
+  notes:{
+    idea:'The two circles from the Capital Calibration redesign, rebuilt in the black system. Circle area is money: what the positions that beat the S&P added against what the laggards cost. Both grow in, then fill with one small circle per position. The headline is the redesign’s own line. It is the most confronting of the twenty: the screen tells the visitor something uncomfortable, and that is the point.',
+    checks:['Capital Calibration component','Benchmark-relative','Illustrative label','Skip']
+  }
+});
+
+/* 19 — Monthly heatmap (positions screens) */
+V.push({
+  name:'The year is the verdict', tag:'Positions’ monthly-returns heatmap fills in, then each year is judged against the S&P',
+  html(){
+    const yrs = Array.from({length:10},(_,i)=>2017+i), r = rng(19), rs = rng(20);
+    let cells = '', wins = 0;
+    yrs.forEach((y,yi) => {
+      cells += `<span class="yr">${y}</span>`; let a = 1, s = 1;
+      for (let m = 0; m < 12; m++){
+        if (y === 2026 && m > 8){ cells += `<span></span>`; continue; }
+        const v = 1 + (r()+r()+r()-1.5)*9.5, sv = .8 + (rs()+rs()+rs()-1.5)*6.5; a *= 1+v/100; s *= 1+sv/100;
+        const tier = Math.abs(v) >= 7 ? .34 : Math.abs(v) >= 4 ? .2 : .1;
+        cells += `<span class="c" data-c="${yi*90 + m*22}" style="background:rgba(${v>=0?'48,209,88':'255,53,51'},${tier})"></span>`;
+      }
+      const ay = (a-1)*100, sy = (s-1)*100; if (ay > sy) wins++;
+      cells += `<span class="an tn" data-c="${1300 + yi*120}" style="color:${ay>sy?'#fff':'var(--t3)'}">${fmt(ay,0,'%')}<small>S&amp;P ${fmt(sy,0,'%')}</small></span>`;
+    });
+    this._wins = wins;
+    return `<div class="body" style="gap:16px">
+      <h1 class="hx fi" data-d="60">Red months happen.<br><span class="dim">The year is the verdict.</span></h1>
+      <div class="hm fi" data-d="150"><span></span>${'JFMAMJJASOND'.split('').map(m=>`<span class="hd">${m}</span>`).join('')}<span class="hd" style="text-align:right">Year</span>${cells}</div>
+      <div class="fi" data-d="2800" style="display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--div);padding-top:12px">
+        <div style="font-size:15px" class="tn">Beat the S&amp;P 500 in <b style="font-weight:500">${wins} of 10</b> years</div>
+        <div class="tiny">Monthly returns, illustrative portfolio</div>
+      </div>
+    </div>${FOOT2(3000)}`;
+  },
+  init(el, ctx){
+    el.querySelectorAll('[data-c]').forEach(c => ctx.later(+c.dataset.c + 300, () => c.classList.add('on')));
+  },
+  notes:{
+    idea:'The monthly-returns heatmap from the positions screens. A decade of months fills in as red and green tiles, which is noisy on purpose, and then the year column settles each row against the S&P 500. Only years that beat the index stay bright. It reframes the colour a trading app trains people to react to: the month is weather, and the verdict is the year against the alternative.',
+    checks:['Positions component','Benchmark per year','Illustrative label','Skip']
+  }
+});
+
+/* 20 — Conviction, priced (buy flow + forecast) */
+V.push({
+  name:'Put a number on it', tag:'The buy flow’s prediction sentence, checked against three AI models',
+  html(){
+    return `<div class="body" style="gap:18px">
+      <h1 class="hx fi" data-d="60">Put a number<br><span class="dim">on your conviction.</span></h1>
+      <div class="sent fi tn" data-d="200">NWR · <b id="c-p">65%</b> chance of <b id="c-r">20%</b>+ over <b id="c-h">3Y</b></div>
+      <div class="pch fi" data-d="300" id="c-ch">${[25,40,50,65,80,90].map(v=>`<button data-v="${v}" aria-pressed="${v===65}">${v}%</button>`).join('')}</div>
+      <div class="fi" data-d="500" style="display:flex;flex-direction:column;gap:12px;margin-top:4px">
+        <div class="lbl">Same question, three models</div>
+        ${[['You',65,'you'],['ChatGPT',47,''],['Claude',42,''],['Gemini',51,'']].map(([n,v,c])=>`<div class="mrow ${c}"><span>${n}</span><span class="tr"><i data-w="${v}"></i></span><span class="v" ${c?'id="c-y"':''}>${v}%</span></div>`).join('')}
+      </div>
+      <div class="fi" data-d="1400" style="border-left:2px solid var(--t4);padding-left:12px;font-size:13.5px;line-height:1.45;color:var(--t2)"><span style="color:var(--t1)">Same evidence, different weighting.</span> Disagreement shows where the outcome is uncertain.</div>
+      <div class="tiny fi" data-d="1500">Educational comparison · not a recommendation · illustrative</div>
+    </div>${FOOT2(1700)}`;
+  },
+  init(el, ctx){
+    const bars = el.querySelectorAll('.mrow i');
+    ctx.later(900, () => bars.forEach(b => b.style.width = b.dataset.w + '%'));
+    const setP = v => { el.querySelector('#c-p').textContent = v + '%'; el.querySelector('#c-y').textContent = v + '%'; bars[0].style.width = v + '%';
+      el.querySelectorAll('#c-ch button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.v === v)); };
+    el.querySelectorAll('#c-ch button').forEach(b => b.addEventListener('click', () => { ctx.stopAuto = true; setP(+b.dataset.v); }));
+    if (RM) return;
+    // dial the sentence in like the buy flow does, then settle on 65 / 20 / 3Y
+    const seq = [[25,10,'1Y'],[40,15,'1Y'],[50,25,'5Y+'],[80,30,'3Y'],[65,20,'3Y']];
+    seq.forEach(([p,r,h],i) => ctx.later(400 + i*260, () => { if (ctx.stopAuto) return;
+      el.querySelector('#c-r').textContent = r + '%'; el.querySelector('#c-h').textContent = h; setP(p); }));
+  },
+  notes:{
+    idea:'Joins two existing pieces. The buy flow’s one-line prediction (“65% chance of 20%+ over 3Y”) is dialled in like a combination lock. The Forecast prototype’s three-model comparison then sits underneath, so the investor’s conviction is visibly checked against ChatGPT, Claude and Gemini. Tap a probability to move your bar. It sells the habit of pricing a belief before acting on it.',
+    checks:['Buy flow + Forecast components','Interactive','Not-a-recommendation label','Illustrative label']
   }
 });
 
