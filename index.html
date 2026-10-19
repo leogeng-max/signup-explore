@@ -1,0 +1,1360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sign-up First Screen Studies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,200..700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: review shell (concept list · phone stage · rationale) around a fixed-black II phone.
+   Phone interior follows the II design system: greyscale, hairlines, Inter, no $ sign. */
+:root{
+  --bg:#ECEDED; --panel:#F7F8F8; --fg:#121314; --muted:#5D6265; --line:#D5D8D9; --chip:#E2E4E5;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+  --ease:cubic-bezier(.32,.72,0,1);
+  /* II phone tokens (single dark look, by design) */
+  --k:#000; --div:#1C1C1C; --surf:#232627; --t1:#FFFFFF; --t2:#C7C7C7; --t3:#929292; --t4:#565B5E;
+  --pos:#5A8F6B; --neg:#A86B6B;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0C0D0E; --panel:#131516; --fg:#E8E9EA; --muted:#8C9194; --line:#24272A; --chip:#1D2022; color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0C0D0E; --panel:#131516; --fg:#E8E9EA; --muted:#8C9194; --line:#24272A; --chip:#1D2022; color-scheme:dark}
+
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);margin:0;-webkit-font-smoothing:antialiased}
+.app{height:100%;display:grid;grid-template-columns:260px 1fr 300px;gap:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px;box-sizing:border-box}
+.side{display:flex;flex-direction:column;gap:14px;min-height:0;padding-right:16px}
+.side h1{font-size:18px;font-weight:600;letter-spacing:-.02em;margin:4px 0 0;text-wrap:balance}
+.side p{margin:0;color:var(--muted);font-size:12.5px;line-height:1.5}
+.list{display:flex;flex-direction:column;gap:2px;overflow:auto;min-height:0;margin:0 -6px}
+.item{all:unset;cursor:pointer;display:grid;grid-template-columns:26px 1fr;gap:6px;padding:9px 6px;border-radius:6px;align-items:baseline}
+.item:hover{background:var(--chip)}
+.item:focus-visible{outline:2px solid var(--fg);outline-offset:-2px}
+.item .n{font:500 11px var(--mono);color:var(--muted)}
+.item .nm{font-size:13.5px;font-weight:500;letter-spacing:-.01em}
+.item .tg{grid-column:2;font-size:11.5px;color:var(--muted);line-height:1.35}
+.grp{font:500 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:14px 6px 6px;border-top:1px solid var(--line);margin-top:8px}
+.item[aria-current="true"]{background:var(--fg);color:var(--bg)}
+.item[aria-current="true"] .n,.item[aria-current="true"] .tg{color:var(--bg);opacity:.7}
+
+.stage{position:relative;min-width:0;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.ctrl{display:flex;gap:8px;align-items:center}
+.ctrl button{all:unset;cursor:pointer;font:500 12.5px var(--sans);padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:var(--panel)}
+.ctrl button:hover{border-color:var(--muted)}
+.ctrl button:focus-visible{outline:2px solid var(--fg)}
+.ctrl .count{font:500 12px var(--mono);color:var(--muted);min-width:52px;text-align:center}
+.devwrap{position:relative}
+.device{position:absolute;left:0;top:0;width:391px;height:828px;transform-origin:0 0;border-radius:56px;background:#0A0A0A;
+  box-shadow:0 0 0 1px #2a2a2a, 0 30px 60px -20px rgba(0,0,0,.45)}
+.screen{position:absolute;left:8px;top:8px;width:375px;height:812px;border-radius:48px;overflow:hidden;background:var(--k);isolation:isolate}
+.island{position:absolute;left:50%;top:11px;width:120px;height:34px;margin-left:-60px;background:#000;border-radius:20px;z-index:50}
+
+.notes{min-height:0;overflow:auto;padding-left:16px;display:flex;flex-direction:column;gap:18px}
+.notes .eyebrow{font:500 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.notes h2{font-size:20px;font-weight:600;letter-spacing:-.02em;margin:4px 0 6px;text-wrap:balance}
+.notes p{margin:0;font-size:13px;line-height:1.55;color:var(--fg)}
+.notes ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.notes li{font-size:12.5px;line-height:1.45;padding-left:12px;border-left:2px solid var(--line)}
+.notes li b{font:500 11px var(--mono);color:var(--muted);display:block;margin-bottom:2px}
+.checks{display:flex;flex-wrap:wrap;gap:6px}
+.checks span{font-size:11.5px;padding:4px 8px;border-radius:999px;background:var(--chip);color:var(--fg)}
+.disclaim{font-size:11.5px;color:var(--muted);line-height:1.5;border-top:1px solid var(--line);padding-top:12px}
+
+@media (max-width:1100px){
+  .app{grid-template-columns:1fr;height:auto;gap:16px}
+  .side{padding-right:0}
+  .list{flex-direction:row;overflow-x:auto;margin:0;padding-bottom:4px}
+  .item{grid-template-columns:auto;flex:0 0 auto;padding:8px 12px;border:1px solid var(--line)}
+  .item .tg{display:none}
+  .item .n{display:none}
+  .notes{padding-left:0;overflow:visible}
+  .grp{border-top:0;margin:0;padding:8px 6px;white-space:nowrap;align-self:center}
+}
+
+/* ============== II phone interior ============== */
+.scr{position:absolute;inset:0;background:var(--k);color:var(--t1);display:flex;flex-direction:column;font-family:var(--sans);overflow:hidden;font-feature-settings:"cv11","ss01"}
+.sb{height:50px;flex:0 0 auto;display:flex;justify-content:space-between;align-items:center;padding:6px 30px 0 40px;font-size:15px;font-weight:600;letter-spacing:-.01em}
+.sb svg{display:block}
+.nav{height:44px;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.mark{font-size:20px;font-weight:300;letter-spacing:-.06em;color:var(--t1)}
+.skip{all:unset;cursor:pointer;color:var(--t3);font:500 14px var(--sans);padding:8px 0}
+.body{flex:1 1 auto;min-height:0;position:relative;padding:0 20px;display:flex;flex-direction:column}
+.foot{flex:0 0 auto;padding:10px 20px 26px;display:flex;flex-direction:column;gap:14px}
+.btn{all:unset;cursor:pointer;height:52px;display:flex;align-items:center;justify-content:center;background:var(--t1);color:var(--k);font:600 16px var(--sans);letter-spacing:-.01em}
+.btn-sub{font-weight:400;font-size:12.5px;opacity:.55;margin-left:10px}
+.login{all:unset;cursor:pointer;text-align:center;color:var(--t1);font:500 14px var(--sans);padding:2px 0}
+.sd{font-size:11px;color:var(--t3);text-align:center;letter-spacing:.01em}
+.lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);font-weight:500}
+.h1{font-weight:300;font-size:31px;line-height:1.06;letter-spacing:-.035em;margin:0;text-wrap:balance}
+.sub{font-size:15px;line-height:1.42;color:var(--t2);margin:0;text-wrap:pretty}
+.tn{font-variant-numeric:tabular-nums}
+.hr{height:1px;background:var(--div)}
+
+/* reveal + draw primitives, driven by [data-d] */
+.fi{opacity:0;transform:translateY(8px);transition:opacity 1.1s var(--ease),transform 1.1s var(--ease)}
+.fi.on{opacity:1;transform:none}
+.dl{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 2.8s var(--ease)}
+.dl.on{stroke-dashoffset:0}
+.fo{opacity:0;transition:opacity 1s var(--ease)}
+.fo.on{opacity:1}
+
+/* AI-style source attribution */
+.srcs{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.srcs .lbl{margin-right:2px}
+.cite{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--div);padding:4px 8px 4px 4px;font-size:10.5px;color:var(--t3);line-height:1}
+.cite i{font-style:normal;display:inline-grid;place-items:center;width:15px;height:15px;background:var(--surf);color:var(--t2);font-size:9.5px;font-weight:600}
+
+/* 01 */
+.m3{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--div);border-bottom:1px solid var(--div)}
+.m3>div{padding:12px 0 12px 12px;border-left:1px solid var(--div);display:flex;flex-direction:column;gap:6px}
+.m3>div:first-child{border-left:0;padding-left:0}
+.m3 .v{font-size:22px;font-weight:300;letter-spacing:-.03em}
+.m3 .v small{font-size:12px;color:var(--t3);margin-left:2px}
+.legend{display:flex;gap:16px;font-size:11px;color:var(--t3);align-items:center}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.legend em{display:inline-block;width:16px;height:0;border-top:1.5px solid var(--t1)}
+.legend em.d{border-top:1.5px dashed var(--t3)}
+.ailine{font-size:11px;color:var(--t3);display:flex;gap:8px;align-items:center}
+.ailine .pulse{width:6px;height:6px;border-radius:50%;background:var(--t2);animation:pl 1.6s infinite}
+@keyframes pl{0%,100%{opacity:.25}50%{opacity:1}}
+
+/* 02 */
+.half{display:flex;flex-direction:column;gap:8px;padding:12px 0}
+.trows{display:flex;flex-direction:column}
+.trow{display:grid;grid-template-columns:52px 1fr 64px 44px;align-items:center;gap:8px;height:30px;font-size:12px;border-bottom:1px solid #141414}
+.trow .s{font-weight:600}
+.trow .p{color:#bbb;text-align:right}
+.trow .c{text-align:center;font-weight:600;font-size:11px;padding:3px 0;border-radius:4px;color:#000}
+.trow .c.up{background:#1ED67A}.trow .c.dn{background:#FF4B5C}
+.trow .b{font-size:10px;font-weight:700;text-align:center;border:1px solid #333;border-radius:4px;padding:3px 0;color:#ddd}
+.flash{animation:fl .35s}
+@keyframes fl{from{background:#2a2a2a}to{background:transparent}}
+.tchips{display:flex;gap:6px;flex-wrap:wrap}
+.tchips span{font-size:10px;font-weight:700;padding:3px 7px;border-radius:999px;background:#1d1d1d;color:#ffcf3d}
+.tchips span.r{color:#FF4B5C}
+.badge{display:inline-grid;place-items:center;min-width:16px;height:16px;border-radius:8px;background:#FF4B5C;color:#fff;font-size:9.5px;font-weight:700;margin-left:6px;padding:0 4px}
+.iirow{display:flex;justify-content:space-between;font-size:11.5px;color:var(--t2)}
+
+/* 03 */
+.seg{display:flex;border:1px solid var(--div)}
+.seg button{all:unset;cursor:pointer;flex:1;text-align:center;font:500 12px var(--sans);color:var(--t3);height:32px;line-height:32px;transition:color .2s,background .2s}
+.seg button[aria-pressed="true"]{background:var(--t1);color:var(--k)}
+.big{font-size:44px;font-weight:200;letter-spacing:-.045em;line-height:1}
+.cap{font-size:14px;color:var(--t2);line-height:1.4;min-height:40px;transition:opacity .5s}
+
+/* 04 */
+.quote{font-size:25px;font-weight:300;line-height:1.16;letter-spacing:-.03em;margin:0;text-wrap:balance}
+.attr{font-size:12px;color:var(--t3);margin-top:10px}
+.orbit text{font-family:var(--sans)}
+.node circle{transition:fill .3s, r .3s}
+.node text{transition:fill .3s}
+
+/* 05 */
+.boot{font-family:var(--mono);font-size:11.5px;line-height:1.5;display:grid;grid-template-columns:104px 1fr 20px;column-gap:8px;row-gap:9px;color:var(--t2)}
+.boot .k{color:var(--t3)}
+.boot .ok{color:var(--t4);text-align:right}
+.boot .ok.on{color:var(--t2)}
+.caret{display:inline-block;width:7px;height:13px;background:var(--t1);vertical-align:-2px;animation:pl 1s steps(1) infinite}
+.os-h{font-size:30px;font-weight:300;letter-spacing:-.035em;line-height:1.08;margin:0;text-wrap:balance}
+
+/* 06 */
+.hz{display:flex;flex-direction:column;gap:12px}
+.hzr{display:grid;grid-template-columns:62px 1fr 54px;gap:10px;align-items:center}
+.hzr .k{font-size:12px;color:var(--t2)}
+.hzr .v{font-size:12px;text-align:right;color:var(--t1)}
+.track{height:14px;position:relative}
+.bar{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--t1);transition:width 1.8s var(--ease)}
+.bar.dim{background:var(--t4)}
+.ann{grid-column:2/4;font-size:10.5px;color:var(--t3);margin-top:-6px}
+
+/* 07 */
+.cvwrap{position:relative;flex:1;min-height:0;margin:0 -20px}
+.cvwrap canvas{position:absolute;inset:0;width:100%;height:100%}
+/* ===== flow screens (shared after every first page) ===== */
+.scr.enter{animation:slin .5s var(--ease)}
+.scr.back-enter{animation:slback .5s var(--ease)}
+@keyframes slin{from{transform:translateX(36px);opacity:0}to{transform:none;opacity:1}}
+@keyframes slback{from{transform:translateX(-36px);opacity:0}to{transform:none;opacity:1}}
+.fhd{height:44px;flex:0 0 auto;display:grid;grid-template-columns:40px 1fr auto;align-items:center;padding:0 20px;gap:8px}
+.fhd .back{all:unset;cursor:pointer;font-size:20px;line-height:1;color:var(--t1);padding:6px 0}
+.fhd .lbl{text-align:center}
+.fhd .illus,.fhd .ph{justify-self:end;min-width:40px;text-align:right}
+.fb{flex:1 1 auto;min-height:0;overflow:auto;padding:8px 20px 0;display:flex;flex-direction:column;gap:22px;scrollbar-width:none}
+.fb::-webkit-scrollbar{display:none}
+.h2f{font-size:28px;font-weight:300;letter-spacing:-.035em;line-height:1.08;margin:0;text-wrap:balance}
+.pf{font-size:14px;color:var(--t2);line-height:1.45;margin:6px 0 0;text-wrap:pretty}
+.ff{flex:0 0 auto;padding:12px 20px 26px;display:flex;flex-direction:column;gap:10px}
+.btn2{all:unset;cursor:pointer;height:52px;display:flex;align-items:center;justify-content:center;border:1px solid var(--t4);color:var(--t1);font:500 15px var(--sans)}
+.lnk{all:unset;cursor:pointer;text-align:center;color:var(--t3);font:500 13.5px var(--sans);padding:4px 0}
+.pair{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--div);border-bottom:1px solid var(--div)}
+.pair>div{padding:14px 0;display:flex;flex-direction:column;gap:6px}
+.pair>div+div{border-left:1px solid var(--div);padding-left:14px}
+.pair .v{font-size:30px;font-weight:200;letter-spacing:-.04em}
+.rows{display:flex;flex-direction:column}
+.rw{all:unset;cursor:pointer;display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:14px 0;border-bottom:1px solid var(--div)}
+.rw:first-of-type{border-top:1px solid var(--div)}
+.rw .nm{font-size:15px;color:var(--t1)}
+.rw .st{font-size:12px;color:var(--t3);margin-top:3px}
+.rw .go{font-size:13px;color:var(--t2)}
+.rw .go.hot{color:var(--t1)}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px;vertical-align:1px;background:var(--t2)}
+.dot.w{background:transparent;border:1px solid var(--t2)}
+.blk{display:flex;flex-direction:column;gap:6px}
+.blk .t{font-size:15px;line-height:1.42;color:var(--t1)}
+.kv2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.kv2 .v{font-size:22px;font-weight:300;letter-spacing:-.03em}
+.sig{display:flex;justify-content:space-between;font-size:13.5px;padding:11px 0;border-bottom:1px solid var(--div);color:var(--t2)}
+.sig b{font-weight:500;color:var(--t1)}
+.sig b.w{color:var(--t3)}
+.fld{display:flex;flex-direction:column;gap:8px}
+.fld label{font-size:13px;color:var(--t2);display:flex;justify-content:space-between}
+.fld label span{color:var(--t3)}
+.inp{all:unset;box-sizing:border-box;width:100%;background:var(--surf);color:var(--t1);font:400 15px/1.4 var(--sans);padding:13px 14px}
+textarea.inp{resize:none;display:block}
+.inp::placeholder{color:var(--t4)}
+.inp:focus{outline:1px solid var(--t3)}
+.chips4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.chips4 button{all:unset;cursor:pointer;text-align:center;height:42px;line-height:42px;border:1px solid var(--div);font:500 14px var(--sans);color:var(--t2);font-variant-numeric:tabular-nums}
+.chips4 button[aria-pressed="true"]{background:var(--t1);color:var(--k);border-color:var(--t1)}
+.aitag{font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);border:1px solid var(--div);padding:2px 6px}
+.bars{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:end;height:170px;border-bottom:1px solid var(--div)}
+.bars>div{display:flex;gap:5px;align-items:flex-end;justify-content:center;height:100%}
+.bars i{display:block;width:16px;height:0;transition:height 1.4s var(--ease)}
+.bars i.s{border:1px solid var(--t4);border-bottom:0}
+.bars i.a{background:var(--t1)}
+.bx{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;text-align:center;font-size:12px;color:var(--t2);margin-top:8px}
+.opt{all:unset;cursor:pointer;display:flex;flex-direction:column;gap:5px;padding:14px 0 14px 14px;border-left:2px solid var(--div)}
+.opt[aria-pressed="true"]{border-left-color:var(--t1)}
+.opt .n{font-size:16px;color:var(--t1);display:flex;gap:10px;align-items:baseline}
+.opt .n span{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}
+.opt .d{font-size:13px;color:var(--t3);line-height:1.4}
+.opt[aria-pressed="false"] .n{color:var(--t2)}
+.or{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;color:var(--t3);font-size:12px}
+.or i{height:1px;background:var(--div)}
+.legal{font-size:11px;color:var(--t3);line-height:1.45;text-align:center;margin:0}
+.legal u{color:var(--t2)}
+.tabs{flex:0 0 auto;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--div);padding:10px 8px 28px}
+.tabs button{all:unset;cursor:pointer;text-align:center;font:500 12px var(--sans);color:var(--t3);position:relative;padding-top:8px}
+.tabs button[aria-current="true"]{color:var(--t1)}
+.tabs button[aria-current="true"]::before{content:"";position:absolute;top:-11px;left:50%;width:20px;margin-left:-10px;height:2px;border-radius:2px;background:var(--t1)}
+.card{border-top:1px solid var(--div);padding-top:14px;display:flex;flex-direction:column;gap:8px}
+.notes .flow{display:flex;flex-direction:column;gap:2px}
+.notes .flow button{all:unset;cursor:pointer;display:grid;grid-template-columns:22px 1fr;font-size:12.5px;padding:6px 8px;border-radius:6px}
+.notes .flow button span{font:500 11px var(--mono);color:var(--muted)}
+.notes .flow button:hover{background:var(--chip)}
+.notes .flow button[aria-current="true"]{background:var(--fg);color:var(--bg)}
+.notes .flow button[aria-current="true"] span{color:var(--bg);opacity:.7}
+
+/* round 2: visual-first */
+.hx{font-size:40px;font-weight:200;letter-spacing:-.05em;line-height:1.02;margin:6px 0 0;text-wrap:balance}
+.hx .dim{color:var(--t4)}
+.cv2{position:relative;flex:1 1 auto;min-height:0}
+.cv2 canvas,.cv2 svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.tiny{font:400 10px var(--mono);color:var(--t4);letter-spacing:.02em}
+.readout{font-size:46px;font-weight:200;letter-spacing:-.05em;line-height:1}
+.cvlbl{position:absolute;left:20px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);font-weight:500}
+.cvlbl b{display:block;font-size:13px;letter-spacing:-.01em;text-transform:none;color:var(--t2);font-weight:400;margin-top:3px}
+
+/* 08 */
+.tog{display:flex;gap:6px}
+.tog button{all:unset;cursor:pointer;font:500 11.5px var(--sans);padding:6px 10px;border:1px solid var(--div);color:var(--t3)}
+.tog button[aria-pressed="true"]{border-color:var(--t1);color:var(--t1)}
+.ledger{display:flex;flex-direction:column}
+.lrow{display:grid;grid-template-columns:1fr auto;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--div)}
+.lrow .k{font-size:14px;color:var(--t2)}
+.lrow .v{font-size:20px;font-weight:300;letter-spacing:-.02em}
+.lbar{grid-column:1/3;height:3px;background:var(--div);margin-top:10px;position:relative}
+.lbar i{position:absolute;left:0;top:0;bottom:0;background:var(--t1);transition:width 1.5s var(--ease)}
+.lbar i.g{background:var(--t3)}
+.diff{font-size:64px;font-weight:200;letter-spacing:-.05em;line-height:1}
+.diff small{font-size:18px;color:var(--t3);letter-spacing:-.01em;margin-left:4px}
+
+/* 09 */
+.rec{border:1px solid var(--div);display:flex;flex-direction:column}
+.rec>div{padding:12px 14px;border-top:1px solid var(--div)}
+.rec>div:first-child{border-top:0}
+.rec .hd{display:flex;justify-content:space-between;align-items:baseline}
+.rec .tk{font-size:17px;font-weight:500;letter-spacing:-.01em}
+.rec .tk span{color:var(--t3);font-weight:400;font-size:13px;margin-left:6px}
+.rec .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.prov{font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);border:1px solid var(--div);padding:2px 6px}
+.prov.you{color:var(--t1);border-color:var(--t4)}
+.rec p{margin:0;font-size:13.5px;line-height:1.4;color:var(--t1);min-height:19px}
+.rec .vs{display:flex;gap:14px;font-size:12.5px;color:var(--t2);white-space:nowrap}
+.rec .vs b{font-weight:400;color:var(--t1)}
+.illus{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);border:1px solid var(--div);padding:2px 6px}
+
+/* 10 — inverted paper study */
+.scr.paper{--k:#FFFFFF; --div:#E4E4E4; --surf:#F2F2F2; --t1:#000000; --t2:#3B3B3B; --t3:#707070; --t4:#B4B4B4}
+.mf{font-size:34px;font-weight:300;letter-spacing:-.04em;line-height:1.08;margin:0}
+.mf .st{color:var(--t1);text-decoration:line-through;text-decoration-thickness:2px;text-decoration-color:transparent;transition:color 1.2s var(--ease),text-decoration-color .9s var(--ease)}
+.mf .st.cut{color:var(--t4);text-decoration-color:var(--t1)}
+.mf .em{font-weight:500}
+
+@media (prefers-reduced-motion: reduce){
+  .fi,.dl,.fo,.bar,.lbar i,.mf .st{transition:none!important}
+  .ailine .pulse,.caret{animation:none}
+}
+</style>
+
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div>
+      <div style="font:500 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">II · Sign-up · Screen 1</div>
+      <h1>Fifteen first screens, one flow</h1>
+    </div>
+    <p>Pick a first-screen study, then tap <b>Look inside</b> on the phone to walk the full sign-up flow. Every study leads into the same six screens.</p>
+    <nav class="list" id="list" aria-label="Studies"></nav>
+  </aside>
+
+  <main class="stage" id="stage">
+    <div class="devwrap" id="devwrap">
+      <div class="device" id="device"><div class="screen" id="screen"></div><div class="island"></div></div>
+    </div>
+    <div class="ctrl">
+      <button id="prev" aria-label="Previous study">← Prev</button>
+      <span class="count" id="count">01 / 10</span>
+      <button id="next" aria-label="Next study">Next →</button>
+      <button id="replay">Replay</button>
+    </div>
+  </main>
+
+  <aside class="notes" id="notes" aria-live="polite"></aside>
+</div>
+
+<script>
+(() => {
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MINUS = '−';
+const PACE = 1.6; // >1 = slower; scales every reveal delay and scripted step
+const fmt = (v, dec = 1, suf = '%', sign = true) => (sign ? (v >= 0 ? '+' : MINUS) : (v < 0 ? MINUS : '')) + Math.abs(v).toFixed(dec) + suf;
+
+/* seeded random walks that land exactly on a target return */
+function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function walk(seed, n, endRet, vol){
+  const r = rng(seed); let c = 0; const cum = [0];
+  for (let i = 1; i <= n; i++){ c += (r()+r()+r()-1.5)*vol; cum.push(c); }
+  const tgt = Math.log(1+endRet), drift = tgt - cum[n];
+  return cum.map((v,i) => 100*Math.exp(v + drift*i/n));
+}
+function pathOf(arr, x0, w, y0, h, min, max){
+  return arr.map((v,i) => (i?'L':'M') + (x0 + w*i/(arr.length-1)).toFixed(1) + ',' + (y0 + h*(1-(v-min)/(max-min))).toFixed(1)).join('');
+}
+const yOf = (v, y0, h, min, max) => y0 + h*(1-(v-min)/(max-min));
+const ease = t => 1 - Math.pow(1-t, 3);
+
+/* ---------- shared phone chrome ---------- */
+const SB = `<div class="sb"><span>9:41</span><svg width="68" height="12" viewBox="0 0 68 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3.5" width="3" height="8.5" rx="1"/><rect x="15" y="1" width="3" height="11" rx="1"/><path d="M30 3.2a8.5 8.5 0 0 1 11.6 0l-1.3 1.4a6.6 6.6 0 0 0-9 0zM32.6 6a4.9 4.9 0 0 1 6.4 0l-1.3 1.4a3 3 0 0 0-3.8 0zM35.8 11l-1.7-1.8a2.4 2.4 0 0 1 3.4 0z"/><rect x="45.5" y="0.5" width="20" height="11" rx="3" fill="none" stroke="currentColor" opacity=".4"/><rect x="47.5" y="2.5" width="16" height="7" rx="1.5"/><rect x="66.5" y="4" width="1.5" height="4" rx=".7" opacity=".4"/></svg></div>`;
+const NAV = `<div class="nav"><span class="mark" aria-label="Intelligent Investing">//</span><button class="skip" data-go="5">Skip</button></div>`;
+const FOOT = (d=0) => `<div class="foot fi" data-d="${d}"><button class="btn" data-go="1">Look inside<span class="btn-sub">No account needed</span></button><button class="login" data-go="6">I already have an account</button><div class="sd">Self-directed investing. Investing involves risk, including loss of principal.</div></div>`;
+const SOURCES = (d, items) => `<div class="srcs fi" data-d="${d}"><span class="lbl">Sources</span>${items.map((s,i)=>`<span class="cite"><i>${i+1}</i>${s}</span>`).join('')}</div>`;
+
+/* ================= THE TEN STUDIES ================= */
+const V = [];
+
+/* 01 — Benchmark, front and centre */
+V.push({
+  name:'Benchmark, front and centre', tag:'The approved direction: portfolio vs S&P with Portfolio / Alpha / S&P',
+  html(){
+    return `<div class="body" style="gap:14px">
+      <h1 class="h1 fi" data-d="80">The world doesn’t need another trading&nbsp;app.</h1>
+      <p class="sub fi" data-d="260">An operating system for investors playing the long game. Every decision, measured against the alternative.</p>
+      <div class="fi" data-d="420" style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+        <div class="legend"><span><em></em>Portfolio</span><span><em class="d"></em>S&amp;P 500</span></div>
+        <span class="lbl">5Y · Illustrative</span>
+      </div>
+      <svg id="c1" width="335" height="176" viewBox="0 0 335 176" style="overflow:visible"></svg>
+      <div class="m3 fi" data-d="1500">
+        <div><span class="lbl">Portfolio</span><span class="v tn" data-count="71.8">+0.0%</span></div>
+        <div><span class="lbl">Alpha</span><span class="v tn" data-count="-12.5" data-suf=" pts" style="font-weight:400">+0.0</span></div>
+        <div><span class="lbl">S&amp;P 500</span><span class="v tn" data-count="84.3" style="color:var(--t2)">+0.0%</span></div>
+      </div>
+      <div class="ailine fi" data-d="2300"><span class="pulse"></span>Compared against the S&amp;P 500 total return, recalculated daily</div>
+      ${SOURCES(2500,['S&amp;P Dow Jones Indices','Illustrative portfolio, not an account'])}
+    </div>${FOOT(2700)}`;
+  },
+  init(el){
+    const svg = el.querySelector('#c1');
+    const P = walk(7,60,.718,.045), S = walk(3,60,.843,.032);
+    const all = P.concat(S), min = Math.min(...all)-4, max = Math.max(...all)+4;
+    const W = 282, H = 150;
+    let g = '';
+    [0,.5,1].forEach(f => g += `<line x1="0" x2="${W}" y1="${(H*f).toFixed(1)}" y2="${(H*f).toFixed(1)}" stroke="#1C1C1C"/>`);
+    const yP = yOf(P[60],0,H,min,max), yS = yOf(S[60],0,H,min,max);
+    g += `<path d="${pathOf(S,0,W,0,H,min,max)}" fill="none" stroke="#929292" stroke-width="1.25" stroke-dasharray="3 3" class="fo" data-d="500"/>`;
+    g += `<path d="${pathOf(P,0,W,0,H,min,max)}" fill="none" stroke="#fff" stroke-width="1.75" pathLength="1" class="dl" data-d="600"/>`;
+    g += `<circle cx="${W}" cy="${yP}" r="3.5" fill="#fff" class="fo" data-d="1900"/><circle cx="${W}" cy="${yS}" r="3" fill="#929292" class="fo" data-d="1900"/>`;
+    g += `<g class="fo" data-d="2100"><line x1="${W+12}" x2="${W+12}" y1="${yS}" y2="${yP}" stroke="#fff"/><line x1="${W+8}" x2="${W+16}" y1="${yS}" y2="${yS}" stroke="#fff"/><line x1="${W+8}" x2="${W+16}" y1="${yP}" y2="${yP}" stroke="#fff"/>
+      <text x="${W+21}" y="${(yP+yS)/2+4}" fill="#fff" font-size="11" font-family="Inter" class="tn">${MINUS}12.5</text></g>`;
+    g += `<text x="0" y="${H+18}" fill="#565B5E" font-size="10" font-family="Inter">Oct 2021</text><text x="${W}" y="${H+18}" fill="#565B5E" font-size="10" text-anchor="end" font-family="Inter">Oct 2026</text>`;
+    svg.innerHTML = g;
+  },
+  notes:{
+    idea:'The one direction the team already agreed on, made into the hero. The portfolio line draws in, the S&P 500 sits beside it as a dashed line, and the gap between them gets measured and labelled as alpha. The illustrative alpha is negative on purpose: the screen proves the app will tell you when the index would have done better.',
+    checks:['Attribution under chart','Skip','Self-directed line','Illustrative label']
+  }
+});
+
+/* 02 — Two systems */
+V.push({
+  name:'Two systems', tag:'Split screen: optimized for activity vs optimized for compounding',
+  html(){
+    return `<div class="body" style="gap:4px">
+      <p class="sub fi" data-d="60" style="color:var(--t1);font-size:20px;font-weight:300;letter-spacing:-.02em">Trading has never been easier.</p>
+      <div class="half fi" data-d="250">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span class="lbl">Most apps ask</span><span style="font-size:11px;color:#bbb">Alerts<span class="badge">12</span></span></div>
+        <div style="font-size:17px;font-weight:300;letter-spacing:-.02em">What should I trade next?</div>
+        <div class="tchips"><span>TRENDING</span><span class="r">TOP LOSERS</span><span>MOST TRADED</span></div>
+        <div class="trows" id="trows"></div>
+        <div style="font-size:11px;color:#bbb">47 trades this month <span style="color:#1ED67A">▲ 12</span></div>
+      </div>
+      <div class="hr"></div>
+      <div class="half fi" data-d="900">
+        <span class="lbl" style="color:var(--t2)">II asks</span>
+        <div style="font-size:17px;font-weight:400;letter-spacing:-.02em">What’s the best use of my capital?</div>
+        <svg id="c2" width="335" height="76" viewBox="0 0 335 92" preserveAspectRatio="none"></svg>
+        <div class="iirow tn"><span>3 decisions this quarter, each with a thesis</span><span>vs S&amp;P 500</span></div>
+      </div>
+      <p class="sub fi" data-d="1500" style="color:var(--t1);font-size:20px;font-weight:300;letter-spacing:-.02em;line-height:1.2;margin-top:6px">Making intelligent capital decisions is something else entirely.</p>
+    </div>${FOOT(1800)}`;
+  },
+  init(el, ctx){
+    const rows = [['TSLA',248.31],['NVDA',131.07],['PLTR',41.88]];
+    const box = el.querySelector('#trows');
+    box.innerHTML = rows.map((r,i)=>`<div class="trow tn" id="tr${i}"><span class="s">${r[0]}</span><span class="p">${r[1].toFixed(2)}</span><span class="c up">+0.0%</span><span class="b">BUY</span></div>`).join('');
+    const ch = rows.map(()=> (Math.random()*8-3));
+    const tick = () => {
+      const i = Math.floor(Math.random()*rows.length);
+      ch[i] += (Math.random()-.5)*1.6; rows[i][1] *= 1+ch[i]/4000;
+      const row = box.children[i];
+      row.querySelector('.p').textContent = rows[i][1].toFixed(2);
+      const c = row.querySelector('.c'); c.textContent = fmt(ch[i],1,'%').replace(MINUS,'-'); c.className = 'c ' + (ch[i]>=0?'up':'dn');
+      row.querySelector('.b').textContent = ch[i]>=0 ? 'BUY' : 'SELL';
+      row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash');
+    };
+    rows.forEach((_,i)=>{ const c = box.children[i].querySelector('.c'); c.textContent = fmt(ch[i],1,'%').replace(MINUS,'-'); c.className='c '+(ch[i]>=0?'up':'dn'); box.children[i].querySelector('.b').textContent = ch[i]>=0?'BUY':'SELL'; });
+    if (!RM) ctx.every(520, tick);
+    const P = walk(21,60,.718,.04), S = walk(3,60,.843,.03), all=P.concat(S), mn=Math.min(...all)-3, mx=Math.max(...all)+3;
+    el.querySelector('#c2').innerHTML =
+      `<line x1="0" x2="335" y1="91" y2="91" stroke="#1C1C1C"/>
+       <path d="${pathOf(S,0,300,4,82,mn,mx)}" fill="none" stroke="#929292" stroke-dasharray="3 3" stroke-width="1.2"/>
+       <path d="${pathOf(P,0,300,4,82,mn,mx)}" fill="none" stroke="#fff" stroke-width="1.6" pathLength="1" class="dl" data-d="1000"/>
+       <text x="306" y="${yOf(S[60],4,82,mn,mx)+3}" fill="#929292" font-size="9.5" font-family="Inter">S&amp;P</text>
+       <text x="306" y="${yOf(P[60],4,82,mn,mx)+3}" fill="#fff" font-size="9.5" font-family="Inter" class="fo" data-d="2400">You</text>`;
+  },
+  notes:{
+    idea:'Puts both systems on one screen, framed by the two questions from the prototype: “What should I trade next?” and “What’s the best use of my capital?”. The top half is an anonymous trading app, the only place colour appears: flickering prices, red and green pills, BUY/SELL on every row, an alert badge. The bottom half is II: one slow line against the S&P and a count of decisions that each have a thesis. Dave’s two sentences frame the contrast above and below.',
+    checks:['No competitor branding','Skip','Self-directed line','Colour used only on the trading-app side']
+  }
+});
+
+/* 03 — Zoom out */
+V.push({
+  name:'Zoom out', tag:'The same holding from 1D to 10Y; the S&P appears once the horizon is long enough',
+  html(){
+    return `<div class="body" style="gap:14px">
+      <h1 class="h1 fi" data-d="60">Different objective.<br>Different environment.</h1>
+      <div class="seg fi" data-d="200" id="seg">${['1D','1W','1M','1Y','5Y','10Y'].map(r=>`<button aria-pressed="false" data-r="${r}">${r}</button>`).join('')}</div>
+      <div class="fi" data-d="300" style="display:flex;justify-content:space-between;align-items:flex-end">
+        <div><div class="lbl" id="z-l">Today</div><div class="big tn" id="z-n" style="margin-top:6px">+0.42%</div></div>
+        <div style="text-align:right" id="z-r"><div class="lbl">S&amp;P 500</div><div class="tn" id="z-s" style="font-size:17px;font-weight:300;color:var(--t2);margin-top:6px">—</div></div>
+      </div>
+      <svg id="c3" width="335" height="200" viewBox="0 0 335 200" class="fi" data-d="300"></svg>
+      <p class="cap fi" data-d="400" id="z-c"></p>
+      ${SOURCES(500,['S&amp;P Dow Jones Indices','Illustrative holding'])}
+    </div>${FOOT(600)}`;
+  },
+  init(el, ctx){
+    const R = {
+      '1D':{s:walk(11,120,.0042,.022), l:'Today', n:.42, cap:'The next move. This is the window trading apps are built around.'},
+      '1W':{s:walk(12,120,-.013,.02), l:'This week', n:-1.3, cap:'Still mostly noise.'},
+      '1M':{s:walk(13,120,.021,.018), l:'This month', n:2.1, cap:'Still mostly noise.'},
+      '1Y':{s:walk(14,120,.094,.017), l:'1 year', n:9.4, sp:walk(24,120,.121,.012), spn:12.1, cap:'A pattern starts to form. So does the question: compared to what?'},
+      '5Y':{s:walk(15,120,.612,.03), l:'5 years', n:61.2, sp:walk(18,120,.843,.022), spn:84.3, cap:'Now the alternative matters. A low-cost index fund was always one tap away.'},
+      '10Y':{s:walk(16,120,2.146,.035), l:'10 years', n:214.6, sp:walk(17,120,2.012,.026), spn:201.2, cap:'Years, measured against the S&P 500. This is what compounding is made of.'}
+    };
+    const svg = el.querySelector('#c3'), W=335, H=184;
+    svg.innerHTML = `<line x1="0" x2="${W}" y1="${H+8}" y2="${H+8}" stroke="#1C1C1C"/><path id="z-sp" fill="none" stroke="#929292" stroke-width="1.25" stroke-dasharray="3 3" opacity="0" style="transition:opacity .5s"/><path id="z-p" fill="none" stroke="#fff" stroke-width="1.6"/>`;
+    const pP = svg.querySelector('#z-p'), pS = svg.querySelector('#z-sp');
+    let curP = null, curS = null, anim = 0;
+    const norm = (k) => { const r=R[k], all = r.sp? r.s.concat(r.sp) : r.s, mn=Math.min(...all), mx=Math.max(...all), pad=(mx-mn)*.08;
+      const f = a => a.map(v => 4 + H*(1-(v-mn+pad)/(mx-mn+2*pad)));
+      return [f(r.s), r.sp ? f(r.sp) : null]; };
+    const toD = a => a.map((y,i)=>(i?'L':'M')+(W*i/(a.length-1)).toFixed(1)+','+y.toFixed(1)).join('');
+    const set = (k) => {
+      el.querySelectorAll('#seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.r===k));
+      const r = R[k]; const [tp, ts] = norm(k);
+      el.querySelector('#z-l').textContent = r.l;
+      el.querySelector('#z-n').textContent = fmt(r.n, Math.abs(r.n)<10?2:1,'%');
+      el.querySelector('#z-s').textContent = r.sp ? fmt(r.spn,1,'%') : '—';
+      el.querySelector('#z-r').style.opacity = r.sp ? 1 : .35;
+      const c = el.querySelector('#z-c'); c.style.opacity = 0; ctx.later(220, ()=>{ c.textContent = r.cap; c.style.opacity = 1; });
+      pS.setAttribute('opacity', r.sp ? 1 : 0);
+      if (ts) { if (!curS) curS = ts.slice(); }
+      const fromP = curP || tp.map(()=>H/2+4), fromS = curS || (ts||[]).map(()=>H/2+4);
+      const id = ++anim, t0 = performance.now(), dur = RM ? 0 : 1300;
+      ctx.raf(function step(now){
+        if (id !== anim) return false;
+        const t = dur ? Math.min(1,(now-t0)/dur) : 1, e = ease(t);
+        curP = fromP.map((y,i)=> y + (tp[i]-y)*e); pP.setAttribute('d', toD(curP));
+        if (ts){ curS = fromS.map((y,i)=> y + (ts[i]-y)*e); pS.setAttribute('d', toD(curS)); }
+        return t < 1;
+      });
+    };
+    el.querySelectorAll('#seg button').forEach(b => b.addEventListener('click', ()=>{ ctx.stopAuto = true; set(b.dataset.r); }));
+    const order = ['1D','1W','1M','1Y','5Y','10Y'];
+    set('1D');
+    if (RM) { set('10Y'); return; }
+    order.slice(1).forEach((k,i)=> ctx.later(1500 + i*1600, ()=>{ if(!ctx.stopAuto) set(k); }));
+  },
+  notes:{
+    idea:'One illustrative holding, auto-zooming from today to ten years. Every timeframe fills the chart, so 1D looks as dramatic as 10Y. Once the horizon is long enough the S&P 500 fades in as the alternative. The visitor feels the shift from noise to compounding before reading anything, and can tap the ranges to replay it.',
+    checks:['Interactive','Attribution','Skip','Self-directed line']
+  }
+});
+
+/* 04 — Systems, not goals */
+V.push({
+  name:'Systems, not goals', tag:'James Clear quote + an orbiting diagram of the system’s parts',
+  html(){
+    return `<div class="body" style="gap:8px">
+      <blockquote class="quote fi" data-d="60" style="margin:0">“You don’t rise to the level of your goals. You fall to the level of your systems.”</blockquote>
+      <div class="attr fi" data-d="250">James Clear, <i>Atomic Habits</i></div>
+      <svg id="c4" class="orbit fi" data-d="450" width="335" height="320" viewBox="0 0 335 320"></svg>
+      <p class="sub fi" data-d="900" style="text-align:center">The disciplines of serious capital allocation, built into everyday investing.</p>
+    </div>${FOOT(1100)}`;
+  },
+  init(el, ctx){
+    const svg = el.querySelector('#c4'), cx=167.5, cy=160, r=104;
+    const N = ['Benchmarking','Investment case','Research','Calibration','Review','What would change my mind'];
+    let g = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#2A2D2E"/>
+      <circle cx="${cx}" cy="${cy}" r="58" fill="none" stroke="#1C1C1C" stroke-dasharray="2 4"/>
+      <text x="${cx}" y="${cy-2}" text-anchor="middle" fill="#fff" font-size="15" font-weight="400">Your capital</text>
+      <text x="${cx}" y="${cy+16}" text-anchor="middle" fill="#929292" font-size="10.5">always vs S&amp;P 500</text>`;
+    N.forEach((n,i)=>{
+      const a = -Math.PI/2 + i*Math.PI*2/N.length, x = cx + r*Math.cos(a), y = cy + r*Math.sin(a);
+      const lx = cx + (r+16)*Math.cos(a), ly = cy + (r+16)*Math.sin(a) + 4;
+      const anchor = Math.abs(Math.cos(a))<.2 ? 'middle' : (Math.cos(a)>0?'start':'end');
+      const dy = Math.abs(Math.cos(a))<.2 ? (Math.sin(a)<0?-6:10) : 0;
+      g += `<g class="node" data-a="${a}"><circle cx="${x}" cy="${y}" r="5" fill="#565B5E"/><text x="${lx}" y="${ly+dy}" text-anchor="${anchor}" fill="#929292" font-size="12">${n}</text></g>`;
+    });
+    g += `<circle id="o-dot" r="3" fill="#fff"/>`;
+    svg.innerHTML = g;
+    const dot = svg.querySelector('#o-dot'), nodes = [...svg.querySelectorAll('.node')];
+    let ang = -Math.PI/2; const t0 = performance.now();
+    ctx.raf(now => {
+      ang = -Math.PI/2 + ((now - t0)/1000) * (RM?0:0.3);
+      dot.setAttribute('cx', cx + r*Math.cos(ang)); dot.setAttribute('cy', cy + r*Math.sin(ang));
+      nodes.forEach(n => {
+        let d = Math.abs(((ang - +n.dataset.a) % (2*Math.PI) + 3*Math.PI) % (2*Math.PI) - Math.PI);
+        const on = d < .45 || RM;
+        n.querySelector('circle').setAttribute('fill', on ? '#fff' : '#565B5E');
+        n.querySelector('text').setAttribute('fill', on ? '#fff' : '#929292');
+      });
+      return true;
+    });
+  },
+  notes:{
+    idea:'Leads with Aidan’s James Clear line, then shows the system it refers to: a ring of the disciplines named in the prototype (benchmarking, investment case, research, Calibration, review, what would change my mind) circling the investor’s capital. A point of light moves around the ring and lights each part in turn. This follows Dave’s order: environment and system first, then features.',
+    checks:['Quote attributed','Skip','Self-directed line','No data shown']
+  }
+});
+
+/* 05 — Operating system */
+V.push({
+  name:'II/OS', tag:'A boot sequence that lists the system’s rules, then the category claim',
+  html(){
+    return `<div class="body" style="gap:22px;justify-content:flex-start">
+      <div class="fi" data-d="40" style="font:500 10.5px var(--mono);color:var(--t3);letter-spacing:.06em;margin-top:6px">CAPITAL ALLOCATION SYSTEM · v1</div>
+      <div class="boot" id="boot"></div>
+      <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px;padding-bottom:6px">
+        <p class="sub fi" id="os-a" style="color:var(--t3)">A different objective requires a different operating system.</p>
+        <h1 class="os-h fi" id="os-b">An operating system for investors playing the long game.</h1>
+      </div>
+    </div>${FOOT(-1)}`;
+  },
+  init(el, ctx){
+    const L = [['question','best use of my capital?'],['benchmark','S&P 500, always on'],['every holding','an investment case'],['every position','measured against the index'],['calibration','is your confidence earned?'],['review','scheduled, not reactive'],['objective','long-term compounding'],['category','reset']];
+    const box = el.querySelector('#boot');
+    box.innerHTML = L.map(([k],i)=>`<span class="k">${k}</span><span class="v" id="bv${i}"></span><span class="ok" id="bo${i}">··</span>`).join('');
+    let t = 300;
+    L.forEach(([,v],i)=>{
+      const span = box.querySelector('#bv'+i), ok = box.querySelector('#bo'+i);
+      if (RM){ span.textContent=v; ok.textContent='ok'; ok.classList.add('on'); return; }
+      ctx.later(t, ()=>{ span.innerHTML = '<span class="caret"></span>'; });
+      [...v].forEach((_,c)=> ctx.later(t + 60 + c*22, ()=>{ span.innerHTML = v.slice(0,c+1) + (c<v.length-1?'<span class="caret"></span>':''); }));
+      t += 60 + v.length*22 + 120;
+      ctx.later(t, ()=>{ ok.textContent='ok'; ok.classList.add('on'); });
+      t += 60;
+    });
+    const fin = RM ? 0 : t + 200;
+    ctx.later(fin, ()=> el.querySelector('#os-a').classList.add('on'));
+    ctx.later(fin+250, ()=> el.querySelector('#os-b').classList.add('on'));
+    ctx.later(fin+500, ()=> el.querySelector('.foot').classList.add('on'));
+  },
+  notes:{
+    idea:'Takes “operating system” literally. A monospaced boot sequence types out the system’s rules (benchmark always on, reasons on every holding, Calibration, memo, AI drafts) and ends on “category: reset”. Then Dave’s line lands. It is the most direct “category reset” study: no chart, the product reads as infrastructure.',
+    checks:['No data shown','Skip','Self-directed line','Mono used only here']
+  }
+});
+
+/* 06 — Long game */
+V.push({
+  name:'Your long game starts here', tag:'Horizon bars: the day trading apps measure vs the decades compounding needs',
+  html(){
+    const rows = [['1 day',0.02,'Where trading apps keep you looking'],['1 year',7],['5 years',40],['10 years',97],['20 years',287],['30 years',661,'Where compounding does its work']];
+    return `<div class="body" style="gap:18px">
+      <h1 class="h1 fi" data-d="60" style="font-size:38px">Your long game starts here.</h1>
+      <p class="sub fi" data-d="250">Trading apps measure your day. We measure your decades, and how you did against the S&amp;P&nbsp;500 the whole way.</p>
+      <div class="hz fi" data-d="450" style="margin-top:8px">${rows.map((r,i)=>`
+        <div class="hzr"><span class="k">${r[0]}</span><div class="track"><div class="bar${i===0?' dim':''}" data-w="${Math.max(.6,r[1]/661*100).toFixed(1)}"></div></div><span class="v tn" data-x="${r[1]}">+0%</span></div>
+        ${r[2]?`<div class="hzr" style="margin-top:-6px"><span></span><span class="ann" style="grid-column:2/4">${r[2]}</span></div>`:''}`).join('')}
+      </div>
+      <div class="fi" data-d="2400" style="font-size:10.5px;color:var(--t3);line-height:1.45;border-top:1px solid var(--div);padding-top:10px">Illustrative cumulative growth at a constant 7% a year. Not a forecast or a promise of performance.</div>
+    </div>${FOOT(2600)}`;
+  },
+  init(el, ctx){
+    el.querySelectorAll('.bar').forEach((b,i)=> ctx.later(RM?0:700+i*260, ()=>{
+      b.style.width = b.dataset.w + '%';
+      const v = b.closest('.hzr').querySelector('.v'), to = +v.dataset.x, t0 = performance.now();
+      ctx.raf(now => { const t = RM?1:Math.min(1,(now-t0)/1800); const x = to*ease(t); v.textContent = '+' + (to<1 ? x.toFixed(2) : Math.round(x)) + '%'; return t<1; });
+    }));
+  },
+  notes:{
+    idea:'Uses Aidan’s tagline as the headline and makes time horizon the visual. Horizontal bars grow from 1 day to 30 years with illustrative compounding at 7%. The 1-day bar is a sliver, which shows how little of the outcome the window trading apps optimise for actually holds. The constant-rate assumption is stated right under the chart.',
+    checks:['Assumption stated','No performance promise','Skip','Self-directed line']
+  }
+});
+
+/* 07 — Environment */
+V.push({
+  name:'Environment shapes behavior', tag:'Live particle field: chaos built for activity above, calm flow built for compounding below',
+  html(){
+    return `<div class="body" style="gap:10px">
+      <h1 class="h1 fi" data-d="60" style="font-size:30px">Your environment shapes your behavior.</h1>
+      <p class="sub fi" data-d="250">What you see is what you act on. Investing is no different.</p>
+      <div class="cvwrap fi" data-d="350">
+        <canvas id="cv7"></canvas>
+        <div class="cvlbl" style="top:8px">Most investing apps<b>Built to make trading easier</b></div>
+        <div class="cvlbl" style="top:52%">Intelligent Investing<b>Built for the long game</b></div>
+      </div>
+    </div>${FOOT(700)}`;
+  },
+  init(el, ctx){
+    const cv = el.querySelector('#cv7'), wrap = cv.parentElement, dpr = Math.min(2, devicePixelRatio||1);
+    const W = wrap.clientWidth || 375, H = wrap.clientHeight || 400;
+    cv.width = W*dpr; cv.height = H*dpr; const c = cv.getContext('2d'); c.scale(dpr,dpr);
+    const mid = H*.48, r = rng(42);
+    const A = Array.from({length:90},()=>({x:r()*W,y:44+r()*(mid-56),vx:(r()-.5)*1.8,vy:(r()-.5)*1.8,c:r()<.5?'#1ED67A':'#FF4B5C'}));
+    const words = ['BUY','SELL','+8.2%','−4.1%','TRENDING','+21%','HOT','−9.7%','NOW'];
+    const pops = [];
+    const B = Array.from({length:110},(_,i)=>({x:r()*W,lane:i%9,s:.15+r()*.2,ph:r()*6}));
+    let last = 0;
+    const draw = (now) => {
+      c.globalAlpha=1; c.fillStyle='rgba(0,0,0,.28)'; c.fillRect(0,0,W,mid); c.clearRect(0,mid,W,H-mid);
+      // chaos
+      A.forEach(p=>{ if(!RM){p.x+=p.vx;p.y+=p.vy; if(p.x<0||p.x>W)p.vx*=-1; if(p.y<44||p.y>mid-10)p.vy*=-1; if(r()<.012){p.vx=(r()-.5)*2.4;p.vy=(r()-.5)*2.4;}}
+        c.fillStyle=p.c; c.globalAlpha=.85; c.fillRect(p.x,p.y,2.8,2.8); });
+      if (!RM && now-last>650){ last=now; pops.push({x:20+r()*(W-80),y:60+r()*(mid-90),w:words[Math.floor(r()*words.length)],t:now}); }
+      for (let i=pops.length-1;i>=0;i--){ const p=pops[i], a=1-(now-p.t)/2400; if(a<=0){pops.splice(i,1);continue;}
+        c.globalAlpha=a*.9; c.fillStyle=p.w.startsWith('−')||p.w==='SELL'?'#FF4B5C':(p.w.startsWith('+')||p.w==='BUY'?'#1ED67A':'#FFCF3D');
+        c.font='700 11px Inter, sans-serif'; c.fillText(p.w,p.x,p.y); }
+      c.globalAlpha=1;
+      // divider
+      c.fillStyle='#1C1C1C'; c.fillRect(0,mid,W,1);
+      // calm flow
+      const top = mid+56, bot = H-12, lanes = 9;
+      c.strokeStyle='#565B5E'; c.setLineDash([3,4]); c.beginPath(); const ry = top+(bot-top)*.62; c.moveTo(0,ry); c.lineTo(W,ry); c.stroke(); c.setLineDash([]);
+      c.fillStyle='#929292'; c.font='10px Inter, sans-serif'; c.fillText('S&P 500', W-58, ry-6);
+      const laneY = (l,x) => top + (bot-top)*(l/(lanes-1))*.86 - (x/W)*30 + Math.sin(x*.012+l*.7)*3;
+      c.lineWidth=1; for (let l=0;l<lanes;l++){ c.strokeStyle='rgba(255,255,255,.07)'; c.beginPath(); for(let x=0;x<=W;x+=8){ const y=laneY(l,x); x?c.lineTo(x,y):c.moveTo(x,y);} c.stroke(); }
+      B.forEach(p=>{ if(!RM){p.x+=p.s; if(p.x>W)p.x=0;}
+        const ly = laneY(p.lane,p.x);
+        c.globalAlpha = .3 + .7*(p.x/W); c.fillStyle='#FFFFFF'; c.fillRect(p.x-10*p.s,ly-.6,10*p.s+2,1.6); });
+      c.globalAlpha=1;
+      return true;
+    };
+    ctx.raf(draw);
+  },
+  notes:{
+    idea:'The prototype’s “Your environment shapes your behavior” intro, shown as two environments running live instead of stated. Above: coloured particles bouncing at random, with BUY, SELL and % moves flashing up. Below: white particles moving in parallel lanes, rising slowly past a dashed S&P 500 reference line. No numbers. The visitor feels the difference first, then reads it.',
+    checks:['Generative canvas','No data shown','Skip','Self-directed line']
+  }
+});
+
+/* 08 — Scoreboard */
+V.push({
+  name:'The question nobody asks you', tag:'Ledger scoreboard: your portfolio vs a low-cost index, with a toggle for two portfolios',
+  html(){
+    return `<div class="body" style="gap:14px">
+      <h1 class="h1 fi" data-d="60">Would an index fund have done better?</h1>
+      <p class="sub fi" data-d="220">The first question II asks of every portfolio, including this one. If a low-cost index fund would have done better, you should know.</p>
+      <div class="fi" data-d="380" style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+        <div class="tog" id="tog"><button aria-pressed="true" data-k="a">Portfolio A</button><button aria-pressed="false" data-k="b">Portfolio B</button></div>
+        <span class="illus">Illustrative · 5Y</span>
+      </div>
+      <div class="ledger fi" data-d="500">
+        <div class="lrow"><span class="k">Your portfolio</span><span class="v tn" id="s-p">+0.0%</span><div class="lbar"><i id="b-p" style="width:0"></i></div></div>
+        <div class="lrow"><span class="k">S&amp;P 500 index fund</span><span class="v tn" id="s-s" style="color:var(--t2)">+0.0%</span><div class="lbar"><i class="g" id="b-s" style="width:0"></i></div></div>
+      </div>
+      <div class="fi" data-d="900"><div class="lbl" style="margin-bottom:8px">Difference</div><div class="diff tn"><span id="s-d">+0.0</span><small>pts</small></div></div>
+      ${SOURCES(1300,['S&amp;P Dow Jones Indices','Illustrative portfolios'])}
+    </div>${FOOT(1500)}`;
+  },
+  init(el, ctx){
+    const D = {a:{p:71.8,s:84.3}, b:{p:96.1,s:84.3}}, MAX = 100;
+    let cur = {p:0,s:0}, id = 0;
+    const set = (k, delay) => {
+      el.querySelectorAll('#tog button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.k===k));
+      const to = D[k], from = {...cur}, my = ++id;
+      ctx.later(delay, ()=>{
+        el.querySelector('#b-p').style.width = (to.p/MAX*100)+'%'; el.querySelector('#b-s').style.width = (to.s/MAX*100)+'%';
+        const t0 = performance.now();
+        ctx.raf(now => { if (my!==id) return false; const t = RM?1:Math.min(1,(now-t0)/1500), e = ease(t);
+          cur = {p: from.p+(to.p-from.p)*e, s: from.s+(to.s-from.s)*e};
+          el.querySelector('#s-p').textContent = fmt(cur.p); el.querySelector('#s-s').textContent = fmt(cur.s);
+          el.querySelector('#s-d').textContent = fmt(cur.p-cur.s,1,''); return t<1; });
+      });
+    };
+    el.querySelectorAll('#tog button').forEach(b=>b.addEventListener('click',()=>set(b.dataset.k,0)));
+    set('a', RM?0:700);
+  },
+  notes:{
+    idea:'Turns the benchmark into the question every investor avoids asking themselves. A plain ledger compares your portfolio with an S&P 500 index fund, and the difference is the biggest number on the screen. A toggle switches between two illustrative portfolios, one behind the index and one ahead, so the screen reads as honest rather than as a scare tactic.',
+    checks:['Attribution','Illustrative label','Interactive','Skip','Self-directed line']
+  }
+});
+
+/* 09 — Think before you buy */
+V.push({
+  name:'Think before you buy', tag:'A decision record assembles itself: thesis, kill criteria, benchmark, record',
+  html(){
+    return `<div class="body" style="gap:14px">
+      <h1 class="h1 fi" data-d="60">Think before you buy.</h1>
+      <p class="sub fi" data-d="220">Every holding comes with your reasons, a benchmark to beat, and a record of how your judgment holds up.</p>
+      <div class="rec fi" data-d="400">
+        <div class="hd"><span class="tk">COST<span>Costco Wholesale</span></span><span class="illus">Illustrative</span></div>
+        <div class="fi" data-d="800"><div class="row"><span class="lbl">Why I own it</span><span class="prov">AI draft · confirmed by you</span></div><p id="r-th"></p></div>
+        <div class="fi" data-d="2500"><div class="row"><span class="lbl">What would change my mind</span><span class="prov you">Yours</span></div><p id="r-kc"></p></div>
+        <div class="fi" data-d="3600"><div class="row"><span class="lbl">Benchmark to beat</span><span class="prov">Since purchase</span></div>
+          <div class="vs tn"><span>COST <b data-count="18.4">+0.0%</b></span><span>S&amp;P 500 <b data-count="12.1" style="color:var(--t2)">+0.0%</b></span><span>Alpha <b data-count="6.3" data-suf=" pts">+0.0</b></span></div></div>
+        <div class="fi" data-d="4300"><div class="row" style="margin:0"><span class="lbl">Conviction · Review on</span><span style="font-size:12px;color:var(--t2)" class="tn">65% · Mar 2027</span></div></div>
+      </div>
+      <p class="fi" data-d="4700" style="margin:4px 0 0;font-size:20px;font-weight:300;letter-spacing:-.02em">Thirty seconds now. A clear record later.</p>
+    </div>${FOOT(4900)}`;
+  },
+  init(el, ctx){
+    const type = (sel, txt, at, sp=16) => { const p = el.querySelector(sel); if (RM){p.textContent=txt;return;} [...txt].forEach((_,i)=>ctx.later(at+i*sp,()=>p.textContent=txt.slice(0,i+1))); };
+    type('#r-th','Membership renewals above 90% keep fee income compounding through a slowdown.', 1000);
+    type('#r-kc','Renewal rate below 88% for two straight quarters.', 2700);
+  },
+  notes:{
+    idea:'Leads with the decision record, the most tangible “different system” artifact. An investment case fills itself in, using the prototype’s wording: why I own it (AI-drafted, confirmed by the investor), what would change my mind (the investor’s own), return against the S&P since purchase, and conviction with a review date. Provenance tags separate what the AI drafted from what the investor decided, so the product helps without reading as managed money.',
+    checks:['Provenance tags','Illustrative label','Skip','Self-directed line']
+  }
+});
+
+/* 10 — Manifesto (paper) */
+V.push({
+  name:'The rewrite', tag:'Kinetic type on paper: “trading activity” gets struck out and replaced',
+  paper:true,
+  html(){
+    return `<div class="body" style="gap:26px;justify-content:center">
+      <p class="mf fi" data-d="100">Every trading app is a system.</p>
+      <p class="mf fi" data-d="900">It’s optimized for <span class="st" id="st">trading activity.</span></p>
+      <p class="mf fi" data-d="2600">Ours is optimized for <span class="em">long-term compounding.</span></p>
+      <div class="fi" data-d="3400" style="border-top:1px solid var(--div);padding-top:16px;display:flex;flex-direction:column;gap:4px">
+        <span style="font-size:15px;color:var(--t2)">Amateurs have goals. Professionals have systems.</span>
+        <span style="font-size:11.5px;color:var(--t3)">James Clear</span>
+      </div>
+    </div>${FOOT(3700)}`;
+  },
+  init(el, ctx){ ctx.later(RM?0:1900, ()=> el.querySelector('#st').classList.add('cut')); },
+  notes:{
+    idea:'A type-only study and the one style that leaves the black system: an inverted, paper-white page. Dave’s argument plays out as an edit. “Trading activity” gets struck through in place and the next line supplies the replacement. It is the most minimal of the ten and tests whether copy alone can deliver the category reset.',
+    checks:['Off-system style test','No data shown','Skip','Self-directed line']
+  }
+});
+
+/* ================= ROUND 2 · VISUAL-FIRST ================= */
+const FOOT2 = (d=0) => `<div class="foot fi" data-d="${d}"><button class="btn" data-go="1">Look inside<span class="btn-sub">No account needed</span></button><button class="login" data-go="6">I already have an account</button><div class="sd">Self-directed. Investing involves risk.</div></div>`;
+const T = ms => RM ? 0 : ms*PACE;
+function cvs(el, sel){
+  const cv = el.querySelector(sel), box = cv.parentElement;
+  const W = box.clientWidth || 335, H = box.clientHeight || 420, dpr = Math.min(2, devicePixelRatio||1);
+  cv.width = W*dpr; cv.height = H*dpr; const c = cv.getContext('2d'); c.scale(dpr,dpr);
+  return {c, W, H};
+}
+const MONO = '"JetBrains Mono", ui-monospace, monospace', SANS = 'Inter, system-ui, sans-serif';
+
+/* 11 — Days are noise */
+V.push({
+  name:'Days are noise', tag:'Ten years of daily moves as a ridgeline, then the one line that matters',
+  html(){
+    return `<div class="body">
+      <h1 class="hx fi" data-d="60">Days are noise.<br><span class="dim">Decades are signal.</span></h1>
+      <div class="cv2 fi" data-d="200" style="margin-top:18px"><canvas id="cv11"></canvas></div>
+      <div class="tiny fi" data-d="3200" style="padding:8px 0 2px">Illustrative · benchmark: S&amp;P 500</div>
+    </div>${FOOT2(3400)}`;
+  },
+  init(el, ctx){
+    const {c, W, H} = cvs(el, '#cv11');
+    const rows = 10, x0 = 34, x1 = W - 4, finalH = 112, ridgeH = H - finalH - 14;
+    const gap = ridgeH / (rows + 1.2), amp = gap * 1.7, win = 220;
+    const R = Array.from({length:rows}, (_,i) => { const w = walk(70+i, 520, 0, .028); const m = w.reduce((a,b)=>a+b)/w.length; return w.map(v => v - m); });
+    const span = Math.max(...R.flat().map(Math.abs));
+    const P = walk(16,120,2.146,.035), S = walk(17,120,2.012,.026), all = P.concat(S), mn = Math.min(...all), mx = Math.max(...all);
+    const fy0 = H - finalH + 18, fh = finalH - 30;
+    const t0 = performance.now(), stag = T(260), sweep = T(1100), ridgeDone = rows*stag + sweep, dim = T(900), lineDur = T(2200);
+    ctx.raf(now => {
+      const t = RM ? 1e9 : now - t0, off = (t/1000)*7;
+      c.clearRect(0,0,W,H);
+      const fade = Math.max(0, Math.min(1, (t - ridgeDone)/Math.max(1,dim)));
+      for (let i = 0; i < rows; i++){
+        const p = Math.max(0, Math.min(1, (t - i*stag)/Math.max(1,sweep)));
+        if (p <= 0) continue;
+        const base = gap*(i+1.2), d = R[i], o = Math.floor(off) % (d.length - win), xe = x0 + (x1-x0)*ease(p);
+        c.beginPath();
+        for (let k = 0; k <= win; k++){ const x = x0 + (x1-x0)*k/win; if (x > xe) break; const y = base - d[o+k]/span*amp*(0.35+0.65*Math.sin(Math.PI*k/win)); k ? c.lineTo(x,y) : c.moveTo(x,y); }
+        c.lineTo(xe, base + amp); c.lineTo(x0, base + amp); c.closePath();
+        c.fillStyle = '#000'; c.fill();
+        c.globalAlpha = (0.85 - 0.6*fade) * (0.55 + 0.45*i/rows); c.strokeStyle = '#fff'; c.lineWidth = 1; c.stroke(); c.globalAlpha = 1;
+        c.fillStyle = '#565B5E'; c.font = `9px ${MONO}`; c.fillText(String(2017+i), 0, base + 3);
+      }
+      // the decade line
+      const lp = Math.max(0, Math.min(1, (t - ridgeDone - dim*0.4)/Math.max(1,lineDur)));
+      if (lp > 0){
+        const n = Math.max(2, Math.floor(120*ease(lp)));
+        const pt = (a,k) => [x0 + (x1-x0-58)*k/119, fy0 + fh*(1-(a[k]-mn)/(mx-mn))];
+        c.fillStyle = '#929292'; c.font = `500 9px ${SANS}`; c.fillText('10 YEARS', 0, fy0 - 6);
+        c.setLineDash([3,3]); c.strokeStyle = '#929292'; c.lineWidth = 1.2; c.beginPath();
+        for (let k = 0; k < n; k++){ const [x,y] = pt(S,k); k ? c.lineTo(x,y) : c.moveTo(x,y); } c.stroke(); c.setLineDash([]);
+        c.strokeStyle = '#fff'; c.lineWidth = 2; c.beginPath();
+        for (let k = 0; k < n; k++){ const [x,y] = pt(P,k); k ? c.lineTo(x,y) : c.moveTo(x,y); } c.stroke();
+        if (lp >= 1){ const [px,py] = pt(P,119), [sx,sy] = pt(S,119);
+          c.fillStyle = '#fff'; c.beginPath(); c.arc(px,py,3,0,7); c.fill();
+          c.font = `11px ${SANS}`; c.fillText('You', px+8, py+4); c.fillStyle = '#929292'; c.fillText('S&P 500', sx+8, sy+10); }
+      }
+      return true;
+    });
+  },
+  notes:{
+    idea:'Ten rows of illustrative daily moves, one per year, stacked like a ridgeline and drifting slowly the way a live ticker does. Once they are all on screen they dim, and a single ten-year line against the S&P 500 draws underneath. The visitor sees the whole argument in one motion: the daily view is texture, the decade view is the result.',
+    checks:['8 words of copy','Benchmark visible','Illustrative label','Skip']
+  }
+});
+
+/* 12 — Think in decades */
+V.push({
+  name:'Think in decades', tag:'A draggable time dial: from the seconds trading apps live in to the decades compounding needs',
+  html(){
+    return `<div class="body" style="gap:6px">
+      <h1 class="hx fi" data-d="60">Think in decades.</h1>
+      <div class="fi" data-d="200" style="position:relative;height:214px;margin-top:10px"><svg id="dial" viewBox="0 0 335 214" style="width:100%;height:100%;touch-action:none;cursor:grab;overflow:visible"></svg></div>
+      <div class="fi" data-d="400" style="display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center;margin-top:4px">
+        <div class="readout tn" id="d-h">1 second</div>
+        <div class="sub" id="d-c" style="color:var(--t3);font-size:14px">Built for the next tick.</div>
+      </div>
+      <div class="cv2 fi" data-d="400" style="margin-top:14px"><svg id="d-sp" preserveAspectRatio="none"></svg></div>
+      <div class="tiny fi" data-d="600" style="text-align:center;padding-top:6px">Drag the dial · illustrative</div>
+    </div>${FOOT2(800)}`;
+  },
+  init(el, ctx){
+    const svg = el.querySelector('#dial'), cx = 167.5, cy = 196, R = 150;
+    const at = (t, r) => { const a = Math.PI + t*Math.PI; return [cx + r*Math.cos(a), cy + r*Math.sin(a)]; };
+    const arc = (t0,t1,r) => { const [x0,y0] = at(t0,r), [x1,y1] = at(t1,r); return `M${x0},${y0}A${r},${r} 0 0 1 ${x1},${y1}`; };
+    let g = '';
+    for (let i = 0; i <= 60; i++){ const t = i/60, [a,b] = at(t, R-4), [c2,d] = at(t, R-(i%5?10:16)); g += `<line x1="${a}" y1="${b}" x2="${c2}" y2="${d}" stroke="${t>.7?'#C7C7C7':'#3a3d3f'}" stroke-width="${i%5?1:1.4}"/>`; }
+    g += `<path d="${arc(0,.44,R+10)}" fill="none" stroke="#565B5E" stroke-width="2"/>`;
+    g += `<path d="${arc(.7,1,R+10)}" fill="none" stroke="#fff" stroke-width="3"/>`;
+    const lab = [['sec',0],['min',.14],['hour',.28],['day',.43],['month',.57],['year',.71],['10 yr',.86],['30 yr',1]];
+    lab.forEach(([s,t]) => { const [x,y] = at(t, R-30); g += `<text x="${x}" y="${y+4}" text-anchor="middle" font-size="10" font-family="${MONO.replace(/"/g,"'")}" fill="${t>.7?'#C7C7C7':'#565B5E'}">${s}</text>`; });
+    g += `<text x="${cx-R-10}" y="${cy+22}" text-anchor="start" font-size="10.5" fill="#565B5E" font-family="Inter">Trading apps</text>`;
+    g += `<text x="${cx+R+10}" y="${cy+22}" text-anchor="end" font-size="10.5" fill="#fff" font-family="Inter">Intelligent Investing</text>`;
+    g += `<line id="d-n" x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy-R+20}" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="5" fill="#fff"/><circle id="d-k" r="7" fill="#000" stroke="#fff" stroke-width="1.5"/>`;
+    svg.innerHTML = g;
+    const needle = svg.querySelector('#d-n'), knob = svg.querySelector('#d-k');
+    // morphing sparkline: noise → trend
+    const sp = el.querySelector('#d-sp'), SW = sp.parentElement.clientWidth || 335, SH = sp.parentElement.clientHeight || 90;
+    sp.setAttribute('viewBox', `0 0 ${SW} ${SH}`);
+    const nz = (a) => { const mn = Math.min(...a), mx = Math.max(...a); return a.map(v => (v-mn)/(mx-mn)); };
+    const N = nz(walk(33,100,0,.07)), TR = walk(34,100,2.1,.012), SP = walk(35,100,1.9,.008);
+    const tm = Math.min(...TR,...SP), tx = Math.max(...TR,...SP), TRn = TR.map(v=>(v-tm)/(tx-tm)), SPn = SP.map(v=>(v-tm)/(tx-tm));
+    sp.innerHTML = `<path id="d-s" fill="none" stroke="#929292" stroke-dasharray="3 3" stroke-width="1.2"/><path id="d-l" fill="none" stroke="#fff" stroke-width="1.6"/>`;
+    const pl = sp.querySelector('#d-l'), ps = sp.querySelector('#d-s');
+    const toD = a => a.map((v,i)=>(i?'L':'M')+(SW*i/(a.length-1)).toFixed(1)+','+(4+(SH-8)*(1-v)).toFixed(1)).join('');
+    const fmtH = t => { const s = Math.exp(Math.log(1) + t*Math.log(30*365*86400));
+      const u = s<60?[s,'second']:s<3600?[s/60,'minute']:s<86400?[s/3600,'hour']:s<30*86400?[s/86400,'day']:s<365*86400?[s/(30*86400),'month']:[s/(365*86400),'year'];
+      const n = Math.max(1, Math.round(u[0])); return n + ' ' + u[1] + (n>1?'s':''); };
+    const sm = (a,b,x) => { const t = Math.max(0,Math.min(1,(x-a)/(b-a))); return t*t*(3-2*t); };
+    const set = (t) => {
+      const [x,y] = at(t, R-20); needle.setAttribute('x2', x); needle.setAttribute('y2', y);
+      const [kx,ky] = at(t, R+10); knob.setAttribute('cx', kx); knob.setAttribute('cy', ky);
+      el.querySelector('#d-h').textContent = fmtH(t);
+      el.querySelector('#d-c').textContent = t < .45 ? 'Built for the next tick.' : t < .7 ? 'Still mostly noise.' : 'Built for compounding.';
+      const f = sm(.35,.85,t);
+      pl.setAttribute('d', toD(N.map((v,i)=> v*(1-f) + TRn[i]*f)));
+      ps.setAttribute('d', toD(SPn)); ps.setAttribute('opacity', f);
+    };
+    let auto = true;
+    set(0.02);
+    if (RM) set(1); else {
+      const t0 = performance.now() + T(700), dur = T(3800);
+      ctx.raf(now => { if (!auto) return false; const p = Math.max(0, Math.min(1, (now - t0)/dur)); set(0.02 + 0.98*ease(p)); return p < 1; });
+    }
+    const pick = (e) => {
+      const r = svg.getBoundingClientRect(), s = r.width/335;
+      const x = (e.clientX - r.left)/s - cx, y = (e.clientY - r.top)/(r.height/214) - cy;
+      let t = (Math.atan2(y, x) + Math.PI) / Math.PI; if (y > 0) t = x < 0 ? 0 : 1;
+      set(Math.max(0, Math.min(1, t)));
+    };
+    svg.addEventListener('pointerdown', e => { auto = false; svg.setPointerCapture(e.pointerId); pick(e); });
+    svg.addEventListener('pointermove', e => { if (svg.hasPointerCapture(e.pointerId)) pick(e); });
+  },
+  notes:{
+    idea:'A watch-bezel dial on a log scale from one second to thirty years. Trading apps own the left of the arc and II owns the right. On load the needle sweeps across, and the line underneath morphs from jagged noise into a compounding curve as the S&P 500 fades in. The visitor can then drag it themselves, which turns the idea into something they touch.',
+    checks:['Interactive','3 words of headline','Benchmark visible','Skip']
+  }
+});
+
+/* 13 — Compounding rings */
+V.push({
+  name:'Compounding rings', tag:'Thirty years drawn as tree rings, with the S&P 500 as a dashed ring to beat',
+  html(){
+    return `<div class="body">
+      <h1 class="hx fi" data-d="60">Compounding<br><span class="dim">grows in rings.</span></h1>
+      <div class="cv2 fi" data-d="200" style="margin-top:6px"><canvas id="cv13"></canvas></div>
+      <div class="fi" data-d="300" style="display:flex;justify-content:space-between;align-items:center;padding-top:6px">
+        <span class="legend"><span><em></em>You</span><span><em class="d"></em>S&amp;P 500</span></span>
+        <span class="tiny">1 ring = 1 year · illustrative</span>
+      </div>
+    </div>${FOOT2(600)}`;
+  },
+  init(el, ctx){
+    const {c, W, H} = cvs(el, '#cv13');
+    const cx = W/2, cy = H/2, Rmax = Math.min(W, H)/2 - 14, Y = 30;
+    const ra = rng(51), rb = rng(52), rp = rng(53);
+    const ret = Array.from({length:Y}, () => .108 + (ra()+ra()+ra()-1.5)*.34);
+    const rs = Array.from({length:Y}, () => .085 + (rb()+rb()+rb()-1.5)*.3);
+    let v = 1, vs = 1; const V1 = ret.map(r => (v *= 1+r)), VS = rs.map(r => (vs *= 1+r));
+    const k = (Rmax - 10) / Math.log(Math.max(V1[Y-1], VS[Y-1]));
+    const rad = V1.map(x => 10 + k*Math.max(0, Math.log(x)));
+    let ph = [rp()*6, rp()*6, rp()*6]; const phs = rad.map(() => (ph = ph.map(p => p + (rp()-.5)*.5)));
+    const rS = 10 + k*Math.log(VS[Y-1]);
+    const t0 = performance.now(), step = T(150), grow = T(600);
+    ctx.raf(now => {
+      const t = RM ? 1e9 : now - t0; c.clearRect(0,0,W,H);
+      let shown = 0, prev = 4;
+      for (let i = 0; i < Y; i++){
+        const p = Math.max(0, Math.min(1, (t - i*step)/Math.max(1,grow))); if (p <= 0) break; shown = i+1;
+        const r = prev + (rad[i]-prev)*ease(p), [a,b,d] = phs[i]; prev = Math.max(prev, rad[i]);
+        c.beginPath();
+        for (let s = 0; s <= 180; s++){ const th = s/180*Math.PI*2, w = 1 + .018*Math.sin(3*th+a) + .012*Math.sin(5*th+b) + .008*Math.sin(8*th+d);
+          const x = cx + r*w*Math.cos(th), y = cy + r*w*Math.sin(th); s ? c.lineTo(x,y) : c.moveTo(x,y); }
+        const neg = ret[i] < 0, last = i === Y-1;
+        c.strokeStyle = neg ? '#565B5E' : '#fff'; c.globalAlpha = neg ? .9 : (last ? 1 : .22 + .55*i/Y); c.lineWidth = last ? 1.8 : (neg ? .8 : 1);
+        if (neg) c.setLineDash([2,3]); c.stroke(); c.setLineDash([]); c.globalAlpha = 1;
+      }
+      c.fillStyle = '#fff'; c.beginPath(); c.arc(cx, cy, 2.5, 0, 7); c.fill();
+      c.fillStyle = '#929292'; c.font = `10px ${MONO}`; c.fillText('YEAR ' + String(Math.max(1,shown)).padStart(2,'0'), 0, 12);
+      const sp = Math.max(0, Math.min(1, (t - Y*step - grow)/T(900) || (RM?1:0)));
+      if (sp > 0){
+        c.globalAlpha = sp; c.setLineDash([4,4]); c.strokeStyle = '#929292'; c.lineWidth = 1.2;
+        c.beginPath(); c.arc(cx, cy, rS, 0, Math.PI*2); c.stroke(); c.setLineDash([]);
+        const diff = (V1[Y-1]/VS[Y-1]-1)*100;
+        c.fillStyle = '#fff'; c.font = `300 22px ${SANS}`; c.textAlign = 'right'; c.fillText(fmt(diff,0,'%'), W, 22);
+        c.fillStyle = '#929292'; c.font = `10px ${SANS}`; c.fillText('vs S&P 500', W, 38); c.textAlign = 'left'; c.globalAlpha = 1;
+      }
+      return t < Y*step + grow + T(1200) || RM === false && false;
+    });
+  },
+  notes:{
+    idea:'Thirty years of an illustrative portfolio drawn as tree rings, one ring a year, growing outward. Down years are dashed grey rings, so drawdowns stay visible inside the growth. When the last ring lands, the S&P 500 appears as a dashed ring with the final difference. Compounding becomes something you watch grow, slowly, which is the tone Dave asked for.',
+    checks:['4 words of copy','Benchmark visible','Down years shown','Illustrative label']
+  }
+});
+
+/* 14 — On the record */
+V.push({
+  name:'On the record', tag:'Your decisions as a constellation above or below the S&P 500 horizon',
+  html(){
+    return `<div class="body">
+      <h1 class="hx fi" data-d="60">Every decision,<br><span class="dim">on the record.</span></h1>
+      <div class="cv2 fi" data-d="150" style="margin:10px -20px 0"><canvas id="cv14"></canvas></div>
+      <div class="tiny fi" data-d="300" style="padding-top:6px">Above the line beat the S&amp;P 500 · illustrative</div>
+    </div>${FOOT2(600)}`;
+  },
+  init(el, ctx){
+    const {c, W, H} = cvs(el, '#cv14');
+    const r = rng(77), mid = H*0.56, sc = (H*0.36)/14;
+    const stars = Array.from({length:150}, () => ({x:r()*W, y:r()*H, s:r()*1.1+.3, p:r()*6, f:.4+r()*1.2}));
+    const D = [['BUY',6],['HOLD',-3],['BUY',11],['TRIM',2],['BUY',-7],['HOLD',9],['ADD',4],['SELL',-2],['BUY',13]];
+    const pts = D.map(([l,a],i) => ({l, a, x: 28 + (W-56)*i/(D.length-1), y: mid - a*sc + (r()-.5)*8}));
+    const t0 = performance.now(), step = T(620), link = T(520);
+    ctx.raf(now => {
+      const t = RM ? 1e9 : now - t0, s = now/1000; c.clearRect(0,0,W,H);
+      stars.forEach(st => { c.globalAlpha = .12 + .25*(.5+.5*Math.sin(s*st.f + st.p)); c.fillStyle = '#fff'; c.fillRect(st.x, st.y, st.s, st.s); });
+      c.globalAlpha = 1;
+      // horizon
+      c.setLineDash([3,4]); c.strokeStyle = '#565B5E'; c.lineWidth = 1; c.beginPath(); c.moveTo(0,mid); c.lineTo(W,mid); c.stroke(); c.setLineDash([]);
+      c.fillStyle = '#929292'; c.font = `10px ${SANS}`; c.fillText('S&P 500', 20, mid-6);
+      // links
+      c.strokeStyle = 'rgba(255,255,255,.3)'; c.lineWidth = 1;
+      for (let i = 1; i < pts.length; i++){
+        const p = Math.max(0, Math.min(1, (t - i*step)/Math.max(1,link))); if (p <= 0) break;
+        const a = pts[i-1], b = pts[i]; c.beginPath(); c.moveTo(a.x,a.y); c.lineTo(a.x+(b.x-a.x)*p, a.y+(b.y-a.y)*p); c.stroke();
+      }
+      // decision stars
+      pts.forEach((p,i) => {
+        const at = i*step + (i ? link : 0), q = Math.max(0, Math.min(1, (t - at)/T(500))); if (q <= 0) return;
+        const up = p.a > 0, last = i === pts.length-1, pulse = last ? 1 + .25*Math.sin(s*2.2) : 1;
+        c.globalAlpha = q;
+        if (up){ c.shadowColor = '#fff'; c.shadowBlur = 14; }
+        c.fillStyle = up ? '#fff' : '#565B5E'; c.beginPath(); c.arc(p.x, p.y, (up?3.6:3)*pulse*ease(q), 0, 7); c.fill(); c.shadowBlur = 0;
+        c.fillStyle = up ? '#C7C7C7' : '#565B5E'; c.font = `9px ${MONO}`; c.textAlign = 'center';
+        c.fillText(p.l, p.x, up ? p.y - 12 : p.y + 18);
+        c.fillText(fmt(p.a,0,''), p.x, up ? p.y - 23 : p.y + 29); c.textAlign = 'left'; c.globalAlpha = 1;
+      });
+      return true;
+    });
+  },
+  notes:{
+    idea:'Each decision (buy, hold, trim, sell) becomes a star, placed above or below a dashed S&P 500 horizon by how it did against the index, and joined to the one before. Over time the record becomes a constellation of the investor’s judgment. It points at the decision record and Calibration without needing a single feature name.',
+    checks:['5 words of copy','Benchmark as horizon','Illustrative label','Skip']
+  }
+});
+
+/* 15 — Is your confidence earned? */
+V.push({
+  name:'Is your confidence earned?', tag:'Decisions rain into confidence buckets and land as beat or trailed; Calibration plots the truth',
+  html(){
+    return `<div class="body">
+      <h1 class="hx fi" data-d="60">Is your confidence<br><span class="dim">earned?</span></h1>
+      <div class="cv2 fi" data-d="150" style="margin-top:12px"><canvas id="cv15"></canvas></div>
+      <div class="tiny fi" data-d="300" style="padding-top:6px">Each dot is one decision · illustrative</div>
+    </div>${FOOT2(600)}`;
+  },
+  init(el, ctx){
+    const {c, W, H} = cvs(el, '#cv15');
+    const conf = [50,65,80,90], rate = [.5,.58,.67,.5], n = 12;
+    const top = 40, bot = H - 52, xl = 44, xr = W - 8;
+    const X = cf => xl + (xr-xl)*(cf-42)/(96-42), Yr = p => bot - (bot-top)*(p-.3)/(1-.3);
+    const r = rng(9), dots = [];
+    conf.forEach((cf,b) => { const beat = Math.round(rate[b]*n); let ui = 0, di = 0;
+      for (let i = 0; i < n; i++){ const up = i < beat, k = up ? ui++ : di++;
+        dots.push({b, up, tx: X(cf) + ((k%4)-1.5)*8, ty: up ? 10 + Math.floor(k/4)*8 : H - 26 + Math.floor(k/4)*8 - 8, d: r()*T(2600), y: -10 - r()*40}); } });
+    dots.sort(() => r()-.5);
+    const t0 = performance.now(), land = T(2600) + T(900), plot = T(1400);
+    ctx.raf(now => {
+      const t = RM ? 1e9 : now - t0, s = now/1000; c.clearRect(0,0,W,H);
+      // axes
+      c.fillStyle = '#565B5E'; c.font = `9px ${MONO}`;
+      c.fillText('BEAT', 0, 22); c.fillText('TRAILED', 0, H - 26);
+      conf.forEach(cf => { c.textAlign = 'center'; c.fillStyle = '#929292'; c.fillText(cf === 90 ? '90%+' : cf + '%', X(cf), H - 2); });
+      c.textAlign = 'left';
+      c.strokeStyle = '#1C1C1C'; c.beginPath(); c.moveTo(0, top - 8); c.lineTo(W, top - 8); c.moveTo(0, bot + 8); c.lineTo(W, bot + 8); c.stroke();
+      // dots falling
+      dots.forEach(d => { const q = Math.max(0, Math.min(1, (t - d.d)/T(700))); if (q <= 0) return;
+        const y = d.y + (d.ty - d.y)*(q < 1 ? q*q : 1);
+        c.fillStyle = d.up ? '#fff' : '#565B5E'; c.beginPath(); c.arc(d.tx, y, 2.6, 0, 7); c.fill(); });
+      // calibration
+      const p = Math.max(0, Math.min(1, (t - land)/Math.max(1,plot)));
+      if (p > 0){
+        c.globalAlpha = Math.min(1, p*2); c.setLineDash([3,4]); c.strokeStyle = '#565B5E'; c.lineWidth = 1;
+        c.beginPath(); c.moveTo(X(45), Yr(.45)); c.lineTo(X(95), Yr(.95)); c.stroke(); c.setLineDash([]);
+        c.fillStyle = '#565B5E'; c.font = `9px ${MONO}`; c.save(); c.translate(X(93), Yr(.93) - 6); c.rotate(-Math.atan2(Yr(.45)-Yr(.95), X(95)-X(45))); c.textAlign = 'right'; c.fillText('if confidence were earned', 0, 0); c.restore();
+        c.globalAlpha = 1;
+        const e = ease(p), py = conf.map((cf,b) => bot - (bot - Yr(rate[b]))*e);
+        c.strokeStyle = '#fff'; c.lineWidth = 1.5; c.beginPath(); conf.forEach((cf,b) => b ? c.lineTo(X(cf), py[b]) : c.moveTo(X(cf), py[b])); c.stroke();
+        conf.forEach((cf,b) => { const big = b === 3 && p >= 1, pr = big ? 1 + .2*Math.sin(s*2.4) : 1;
+          c.fillStyle = '#000'; c.strokeStyle = '#fff'; c.lineWidth = 1.5; c.beginPath(); c.arc(X(cf), py[b], 5*pr, 0, 7); c.fill(); c.stroke(); });
+        if (p >= 1){ const x = X(90), y0 = Yr(.5), y1 = Yr(.9);
+          c.strokeStyle = '#929292'; c.lineWidth = 1; c.beginPath(); c.moveTo(x, y0 - 8); c.lineTo(x, y1 + 4); c.stroke();
+          c.fillStyle = '#fff'; c.font = `11px ${SANS}`; c.textAlign = 'right'; c.fillText('Overconfident', x - 8, y1 + 18); c.textAlign = 'left'; }
+      }
+      return true;
+    });
+  },
+  notes:{
+    idea:'Calibration as a moment of truth. Illustrative decisions rain down into four confidence buckets and land as beat the index or trailed. A line then rises to show how often each level of confidence actually paid off, against a dashed line for what earned confidence would look like. The 90%+ bucket falls short and gets flagged as overconfident. It is the most provocative of the five: it asks the investor a question about themselves.',
+    checks:['4 words of copy','Calibration preview','Illustrative label','Skip']
+  }
+});
+
+/* ================= SHARED FLOW (screens 2–8, black II system) ================= */
+const FHD = (back, label, right='') => `<div class="fhd"><button class="back" data-go="${back}" aria-label="Back">←</button><span class="lbl">${label}</span>${right ? `<span class="illus">${right}</span>` : '<span class="ph"></span>'}</div>`;
+const F = [];
+
+/* 2 · Example portfolio vs benchmark */
+F.push({
+  name:'Example portfolio',
+  html(){
+    return `${FHD(0,'Preview 1 / 3','Illustrative')}
+    <div class="fb">
+      <div class="fi" data-d="0"><h2 class="h2f">Is it beating the index?</h2><p class="pf">The first question II asks of every portfolio, including this one.</p></div>
+      <div class="pair fi" data-d="80">
+        <div><span class="lbl">Portfolio · 3 yrs</span><span class="v tn" data-count="31.4">+0.0%</span></div>
+        <div><span class="lbl">S&amp;P 500 · 3 yrs</span><span class="v tn" data-count="38.9" style="color:var(--t2)">+0.0%</span></div>
+      </div>
+      <div class="fi" data-d="140"><svg id="f1c" viewBox="0 0 335 120" style="width:100%;height:120px;display:block;overflow:visible"></svg>
+        <div style="display:flex;justify-content:space-between;margin-top:8px"><span class="legend"><span><em></em>Portfolio</span><span><em class="d"></em>S&amp;P 500</span></span><span class="tiny">Source: S&amp;P DJI</span></div></div>
+      <p class="pf fi" data-d="200" style="margin:0">If a low-cost index fund would have done better, you should know. Every portfolio in II is measured against a benchmark.</p>
+      <div class="fi" data-d="260"><div class="lbl" style="margin-bottom:6px">Holdings</div>
+        <div class="rows">
+          <button class="rw" data-go="2"><span><div class="nm">Northwind Rail</div><div class="st"><span class="dot"></span>Case on track · review Mar 2027</div></span><span class="go hot">Open case ›</span></button>
+          <div class="rw" style="cursor:default"><span><div class="nm">Harbor Utilities</div><div class="st"><span class="dot w"></span>Case needs review</div></span><span class="go">›</span></div>
+          <div class="rw" style="cursor:default"><span><div class="nm">Lumen Software</div><div class="st"><span class="dot"></span>Case on track · review Jan 2027</div></span><span class="go">›</span></div>
+        </div></div>
+    </div>
+    <div class="ff fi" data-d="300"><button class="btn" data-go="2">Open Northwind Rail</button></div>`;
+  },
+  init(el){
+    const P = walk(41,36,.314,.035), S = walk(42,36,.389,.028), all = P.concat(S), mn = Math.min(...all)-2, mx = Math.max(...all)+2;
+    el.querySelector('#f1c').innerHTML = `<line x1="0" x2="335" y1="119" y2="119" stroke="#1C1C1C"/>
+      <path d="${pathOf(S,0,335,4,108,mn,mx)}" fill="none" stroke="#929292" stroke-width="1.25" stroke-dasharray="3 3"/>
+      <path d="${pathOf(P,0,335,4,108,mn,mx)}" fill="none" stroke="#fff" stroke-width="1.75" pathLength="1" class="dl" data-d="200"/>`;
+  },
+  note:'Prototype screen 2. The S&P 500 comparison is the opening question. “You choose which one” is removed from the copy, as Dave asked in the meeting.'
+});
+
+/* 3 · Holding + investment case */
+F.push({
+  name:'Holding + investment case',
+  html(){
+    return `${FHD(1,'Preview 2 / 3','Illustrative')}
+    <div class="fb">
+      <div class="fi" data-d="0" style="display:flex;justify-content:space-between;align-items:flex-end">
+        <div><h2 class="h2f">Northwind Rail</h2><div class="pf" style="margin-top:4px;color:var(--t3)">NWR · held 14 months</div></div>
+        <div style="text-align:right"><div class="tn" style="font-size:22px;font-weight:300;letter-spacing:-.02em">182.40 <span style="font-size:12px;color:var(--t3)">CAD</span></div><div class="tn" style="font-size:12.5px;color:var(--t2);margin-top:4px">${MINUS}3.2 pts vs index</div></div>
+      </div>
+      <div class="card fi" data-d="80">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span class="lbl" style="color:var(--t1)">Investment case</span><span class="tiny">Written at purchase</span></div>
+        <div class="blk"><span class="lbl">Why I own it</span><span class="t">Freight volumes recover and the margin program lands, lifting earnings faster than the market expects.</span></div>
+        <div class="kv2" style="margin:6px 0"><div class="blk"><span class="lbl">Conviction</span><span class="v tn">65%</span></div><div class="blk"><span class="lbl">Review on</span><span class="v tn">Mar 2027</span></div></div>
+        <div class="blk"><span class="lbl">What would change my mind</span><span class="t">Operating ratio fails to improve for two straight quarters.</span></div>
+      </div>
+      <div class="fi" data-d="160"><div class="lbl" style="margin-bottom:4px">Signals since purchase</div>
+        <div class="sig"><span>Volumes recovering</span><b>Holding</b></div>
+        <div class="sig"><span>Margin program on schedule</span><b>Holding</b></div>
+        <div class="sig"><span>Operating ratio</span><b class="w">Watch</b></div>
+      </div>
+    </div>
+    <div class="ff fi" data-d="220" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button class="btn2" data-go="4">Sell…</button><button class="btn" data-go="3">Buy more</button></div>`;
+  },
+  note:'Prototype screen 3. The case reads as a record (why I own it, conviction, review date, what would change my mind), with signals since purchase in plain words. Hold and Watch use brightness only, no red or green.'
+});
+
+/* 4 · Before you buy */
+F.push({
+  name:'Before you buy',
+  html(){
+    return `${FHD(2,'Preview 3 / 3')}
+    <div class="fb">
+      <div class="fi" data-d="0"><h2 class="h2f">Before you buy</h2><p class="pf">Thirty seconds now. A clear record later.</p></div>
+      <div class="fi" data-d="60" style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--div);padding-bottom:14px">
+        <div><div style="font-size:15px">Buy Northwind Rail</div><div class="tiny" style="margin-top:4px">Market order</div></div>
+        <div class="tn" style="font-size:26px;font-weight:200;letter-spacing:-.03em">1,000.00 <span style="font-size:12px;color:var(--t3)">CAD</span></div>
+      </div>
+      <div class="fld fi" data-d="120"><label for="why">Why this, why now? <span class="aitag">AI draft · edit</span></label>
+        <textarea id="why" class="inp" rows="4">Volumes are recovering ahead of plan and the margin program is on schedule. Adding while the market still prices a slow recovery.</textarea></div>
+      <div class="fld fi" data-d="160"><label>How confident are you it beats the index?</label>
+        <div class="chips4" id="conf">${['50%','65%','80%','90%+'].map(c=>`<button aria-pressed="${c==='65%'}">${c}</button>`).join('')}</div></div>
+      <div class="fld fi" data-d="200"><label for="chg">What would make you sell? <span>Optional</span></label>
+        <input id="chg" class="inp" type="text" placeholder="e.g. margins stall two quarters running"></div>
+      <div class="sig fi" data-d="240" style="border-top:1px solid var(--div)"><span>Review reminder</span><b>In 6 months ›</b></div>
+    </div>
+    <div class="ff fi" data-d="280"><button class="btn" data-go="4">Save case and review order</button><button class="lnk" data-go="4">Skip · buy without a case</button></div>`;
+  },
+  init(el){
+    el.querySelectorAll('#conf button').forEach(b => b.addEventListener('click', () => el.querySelectorAll('#conf button').forEach(x => x.setAttribute('aria-pressed', x===b))));
+  },
+  note:'Prototype screen 4. One change from the prototype: the AI drafts “why this, why now” first and the investor edits it, so this is never a blank form (II checklist, Gate 4). Selling criteria stay optional.'
+});
+
+/* 5 · Calibration */
+F.push({
+  name:'Calibration',
+  html(){
+    const st = [50,65,80,90], ac = [50,58,67,50];
+    return `${FHD(3,'What it adds up to','Illustrative')}
+    <div class="fb">
+      <div class="fi" data-d="0"><h2 class="h2f">Is your confidence earned?</h2><p class="pf">Calibration compares how sure you were with how things turned out.</p></div>
+      <div class="fi" data-d="80">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span class="lbl">Beat the index, by stated confidence</span></div>
+        <div class="bars" id="bars">${st.map((s,i)=>`<div><i class="s" data-h="${s}"></i><i class="a" data-h="${ac[i]}"></i></div>`).join('')}</div>
+        <div class="bx tn">${st.map(s=>`<span>${s===90?'90%+':s+'%'}</span>`).join('')}</div>
+        <div class="legend" style="margin-top:14px"><span><em style="border-top:0;width:10px;height:10px;border:1px solid var(--t4)"></em>How sure you were</span><span><em style="border-top:0;width:10px;height:10px;background:#fff"></em>How often it beat the index</span></div>
+      </div>
+      <p class="pf fi" data-d="140" style="margin:0;color:var(--t1)">In this example, “90% sure” calls worked out about as often as “50% sure” ones.</p>
+      <p class="tiny fi" data-d="180" style="margin:0;line-height:1.5">Calibration needs a track record. Expect it to say something useful after roughly a dozen decisions with cases.</p>
+    </div>
+    <div class="ff fi" data-d="220"><button class="btn" data-go="5">Set this up for my money</button></div>`;
+  },
+  init(el, ctx){
+    ctx.later(300, () => el.querySelectorAll('#bars i').forEach(i => i.style.height = (i.dataset.h/100*160) + 'px'));
+  },
+  note:'Prototype screen 5, rebuilt as paired bars: an outline for how sure you were and a solid bar for how often it beat the index. The gap at 90%+ is the insight. The advice-like line about sizing is cut, to keep it from reading as a recommendation.'
+});
+
+/* 6 · Create account (benchmark fixed to S&P 500) */
+F.push({
+  name:'Create account',
+  html(){
+    return `${FHD(4,'Setup')}
+    <div class="fb">
+      <div class="fi" data-d="0"><h2 class="h2f">Save your setup</h2><p class="pf">Every portfolio is measured against the S&amp;P 500. Create an account to start your first case. Funding can wait.</p></div>
+      <div class="fi" data-d="60" style="display:flex;gap:10px;align-items:center;font-size:14px;color:var(--t2);border-top:1px solid var(--div);border-bottom:1px solid var(--div);padding:12px 0"><span style="color:var(--t1)">✓</span>Benchmark<span style="margin-left:auto;color:var(--t1)">S&amp;P 500</span></div>
+      <div class="fi" data-d="100" style="display:flex;flex-direction:column;gap:8px"><button class="btn2">Continue with Apple</button><button class="btn2">Continue with Google</button></div>
+      <div class="or fi" data-d="120"><i></i>or<i></i></div>
+      <div class="fld fi" data-d="140"><label for="em">Email</label><input id="em" class="inp" type="email" autocomplete="off" placeholder="you@example.com"></div>
+    </div>
+    <div class="ff fi" data-d="180"><button class="btn" data-go="6">Create account</button><p class="legal">By continuing you agree to the <u>Terms</u> and <u>Privacy Policy</u>. Identity verification is required before trading.</p></div>`;
+  },
+  note:'Prototype screen 7. Account creation comes after the visitor has seen the value, and funding is explicitly deferred. The benchmark picker (prototype screen 6) is cut: the S&P 500 is fixed, as Dave asked, and this screen confirms it.'
+});
+
+/* 7 · Default home */
+F.push({
+  name:'Home',
+  html(){
+    return `<div class="nav"><span class="mark">//</span><button class="skip" style="color:var(--t2)">Search</button></div>
+    <div class="fb" style="gap:26px">
+      <h2 class="h2f fi" data-d="0" style="font-size:32px">Your decisions</h2>
+      <div class="card fi" data-d="60">
+        <span class="lbl">You vs S&amp;P 500</span>
+        <div class="tn" style="font-size:40px;font-weight:200;letter-spacing:-.04em;color:var(--t4)">— <span style="font-size:16px;color:var(--t3)">vs</span> —</div>
+        <p class="pf" style="margin:0">Starts tracking from your first holding. Bring existing holdings over to measure them too.</p>
+        <button class="lnk" style="text-align:left;color:var(--t1)">Import holdings →</button>
+      </div>
+      <div class="card fi" data-d="120">
+        <span class="lbl">Next step</span>
+        <div style="font-size:18px;font-weight:400;letter-spacing:-.01em">Write a case for an idea you’re considering</div>
+        <p class="pf" style="margin:0">No money needed. Practice the process before your next real decision.</p>
+        <button class="btn2" data-go="3" style="margin-top:6px">Start a case</button>
+      </div>
+      <div class="card fi" data-d="160"><span class="lbl">Upcoming reviews</span><p class="pf" style="margin:0;color:var(--t3)">Nothing scheduled yet. Every case you write sets one.</p></div>
+      <button class="rw fi" data-d="200" style="border-top:1px solid var(--div)"><span class="nm">Markets &amp; prices</span><span class="go">›</span></button>
+    </div>
+    <nav class="tabs">${['Home','Cases','Portfolio','Calibration'].map((t,i)=>`<button aria-current="${i===0}">${t}</button>`).join('')}</nav>`;
+  },
+  note:'Prototype screen 8. A designed empty state: benchmark slot waiting, one next step that costs no money, and text-only navigation as the design system requires.'
+});
+
+/* ================= RUNTIME ================= */
+const screen = document.getElementById('screen');
+const list = document.getElementById('list');
+const notes = document.getElementById('notes');
+let idx = 0, ctx = null;
+
+function makeCtx(){
+  const c = {alive:true, ids:[], ivs:[], stopAuto:false};
+  c.later = (ms, fn) => { const id = setTimeout(()=>{ if (c.alive) fn(); }, Math.max(0,ms*PACE)); c.ids.push(id); };
+  c.every = (ms, fn) => { const id = setInterval(()=>{ if (c.alive) fn(); }, ms); c.ivs.push(id); };
+  c.raf = (fn) => { const loop = (t) => { if (!c.alive) return; if (fn(t) !== false) requestAnimationFrame(loop); }; requestAnimationFrame(loop); };
+  c.kill = () => { c.alive = false; c.ids.forEach(clearTimeout); c.ivs.forEach(clearInterval); };
+  return c;
+}
+
+function countUp(el, c){
+  const to = +el.dataset.count, suf = el.dataset.suf ?? '%', dec = +(el.dataset.dec ?? 1), t0 = performance.now();
+  c.raf(now => { const t = RM?1:Math.min(1,(now-t0)/1800); el.textContent = fmt(to*ease(t), dec, suf); return t<1; });
+}
+
+let step = 0;
+const FLOW_NAMES = () => [V[idx].name + ' (first page)'].concat(F.map(f => f.name));
+
+function reveal(){
+  screen.querySelectorAll('[data-d]').forEach(n => {
+    const d = +n.dataset.d; if (d < 0) return;
+    ctx.later(RM ? 0 : d, () => {
+      n.classList.add('on');
+      if (n.dataset.count !== undefined) countUp(n, ctx);
+      n.querySelectorAll('[data-count]').forEach(x => countUp(x, ctx));
+    });
+  });
+}
+
+function mount(n, dir){
+  if (ctx) ctx.kill();
+  ctx = makeCtx();
+  step = n;
+  if (n === 0){
+    const v = V[idx];
+    screen.innerHTML = `<div class="scr${v.paper?' paper':''}${dir<0?' back-enter':''}">${SB}${NAV}${v.html()}</div>`;
+    v.init(screen.firstElementChild, ctx);
+  } else {
+    const f = F[n-1];
+    screen.innerHTML = `<div class="scr ${dir<0?'back-enter':'enter'}">${SB}${f.html()}</div>`;
+    f.init && f.init(screen.firstElementChild, ctx);
+  }
+  reveal();
+  paintNotes();
+}
+
+function paintNotes(){
+  const v = V[idx], N = v.notes, names = FLOW_NAMES();
+  const cur = step === 0 ? N.idea : F[step-1].note;
+  notes.innerHTML = `
+    <div><div class="eyebrow">Study ${String(idx+1).padStart(2,'0')}${step ? ' · Flow step ' + (step+1) + ' of ' + (F.length+1) : ''}</div><h2>${step ? F[step-1].name : v.name}</h2><p>${cur}</p></div>
+    ${step === 0 ? `<div><div class="eyebrow" style="margin-bottom:8px">Constraints covered</div><div class="checks">${N.checks.map(c=>`<span>${c}</span>`).join('')}</div></div>` : ''}
+    <div><div class="eyebrow" style="margin-bottom:8px">Sign-up flow · tap to jump</div><div class="flow">${names.map((nm,i)=>`<button data-step="${i}" aria-current="${i===step}"><span>${i+1}</span>${nm}</button>`).join('')}</div></div>
+    <div class="disclaim">Every first-page study leads into the same six flow screens, rebuilt from the prototype in the II design system. All figures are illustrative placeholders for design review, not real index or portfolio returns.</div>`;
+  notes.querySelectorAll('[data-step]').forEach(b => b.addEventListener('click', () => { const n = +b.dataset.step; mount(n, n < step ? -1 : 1); }));
+}
+
+function render(){
+  mount(0, 0);
+  list.querySelectorAll('.item').forEach((b,i)=> b.setAttribute('aria-current', i===idx));
+  document.getElementById('count').textContent = String(idx+1).padStart(2,'0') + ' / ' + V.length;
+  try { history.replaceState(null,'','#s'+(idx+1)); } catch(e){}
+  try { localStorage.setItem('ii-signup-study', idx); } catch(e){}
+}
+
+screen.addEventListener('click', e => {
+  const t = e.target.closest('[data-go]'); if (!t) return;
+  const n = +t.dataset.go; mount(n, n < step ? -1 : 1);
+});
+
+V.forEach((v,i)=>{
+  if (v.group && (i===0 || V[i-1].group !== v.group)){
+    const h = document.createElement('div'); h.className = 'grp'; h.textContent = v.group; list.appendChild(h);
+  }
+  const b = document.createElement('button');
+  b.className = 'item'; b.innerHTML = `<span class="n">${String(i+1).padStart(2,'0')}</span><span class="nm">${v.name}</span><span class="tg">${v.tag}</span>`;
+  b.addEventListener('click', ()=>{ idx = i; render(); });
+  list.appendChild(b);
+});
+const go = d => { idx = (idx + d + V.length) % V.length; render(); };
+document.getElementById('prev').onclick = () => go(-1);
+document.getElementById('next').onclick = () => go(1);
+document.getElementById('replay').onclick = () => mount(step, 0);
+addEventListener('keydown', e => { if (e.target.closest && e.target.closest('input,textarea')) return; if (e.key==='ArrowRight') go(1); if (e.key==='ArrowLeft') go(-1); });
+
+/* fit the phone to the stage */
+const devwrap = document.getElementById('devwrap'), device = document.getElementById('device'), stage = document.getElementById('stage');
+function fit(){
+  const narrow = innerWidth <= 1100;
+  const availW = narrow ? Math.min(stage.clientWidth, 420) : stage.clientWidth - 24;
+  const availH = narrow ? 828 : stage.clientHeight - 60;
+  const s = Math.min(1, availW/391, availH/828);
+  device.style.transform = `scale(${s})`;
+  devwrap.style.width = (391*s)+'px'; devwrap.style.height = (828*s)+'px';
+}
+addEventListener('resize', fit);
+
+const m = /^#s(\d+)$/.exec(location.hash);
+if (m && +m[1]>=1 && +m[1]<=V.length) idx = +m[1]-1;
+else { try { const s = +localStorage.getItem('ii-signup-study'); if (s>=0 && s<V.length) idx = s; } catch(e){} }
+fit(); render();
+if (document.fonts) document.fonts.ready.then(fit);
+})();
+</script>
+
+</body>
+</html>
